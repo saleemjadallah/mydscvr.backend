@@ -64,6 +64,7 @@ async def get_event_advice(
         try:
             ObjectId(event_id)
         except Exception:
+            logger.error(f"Invalid event ID format: {event_id}")
             raise HTTPException(status_code=400, detail="Invalid event ID format")
         
         # Build query
@@ -86,6 +87,7 @@ async def get_event_advice(
         sort_field = sort_by
         
         # Execute query with optimized indexes
+        logger.info(f"Executing query: {query} with sort: {sort_field} {sort_order}")
         cursor = advice_collection.find(query).sort(sort_field, sort_direction).skip(offset).limit(limit)
         advice_list = []
         
