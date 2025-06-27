@@ -41,6 +41,22 @@ jobs:
         script: |
           cd /home/ubuntu/mydscvr-backend
           git pull origin main
+          
+          # Create Backend.env file with secrets
+          cat > Backend/Backend.env << EOF
+          MONGODB_URL=${{ secrets.MONGODB_URL }}
+          MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          PERPLEXITY_API_KEY=${{ secrets.PERPLEXITY_API_KEY }}
+          WEBHOOK_API_KEY=${{ secrets.WEBHOOK_API_KEY }}
+          ZEPTO_API_KEY=${{ secrets.ZEPTO_API_KEY }}
+          DEBUG=False
+          ACCESS_TOKEN_EXPIRE_MINUTES=10080
+          REFRESH_TOKEN_EXPIRE_DAYS=30
+          EOF
+          
           source venv/bin/activate
           pip install -r Backend/requirements.txt
           sudo systemctl restart mydscvr-backend
