@@ -55,7 +55,7 @@ async def get_event_advice(
     sort_order: str = Query("desc", description="asc or desc")
 ):
     """Get advice for a specific event with advanced filtering and sorting"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -125,7 +125,7 @@ async def create_advice_impl(
     advice_data: CreateAdviceModel,
     current_user: UserModel
 ):
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -200,7 +200,7 @@ async def update_advice(
     current_user: UserModel = Depends(get_current_user)
 ):
     """Update existing advice with ownership validation"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -263,7 +263,7 @@ async def interact_with_advice(
     current_user: UserModel = Depends(get_current_user)
 ):
     """Enhanced helpful functionality with better rating calculation and duplicate prevention"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -372,7 +372,7 @@ async def interact_with_advice(
 @router.get("/stats/{event_id}", response_model=EventAdviceStatsModel)
 async def get_advice_stats(event_id: str):
     """Get comprehensive advice statistics for an event"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -473,7 +473,7 @@ async def delete_advice(
     current_user: UserModel = Depends(get_current_user)
 ):
     """Delete advice with proper authorization"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -535,7 +535,7 @@ async def get_user_advice(
     current_user: UserModel = Depends(get_current_user)
 ):
     """Get advice provided by a specific user with proper authorization"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -577,7 +577,7 @@ async def check_user_interaction(
     current_user: UserModel = Depends(get_current_user)
 ):
     """Check if current user has already interacted with specific advice"""
-    if not advice_collection:
+    if advice_collection is None:
         logger.error("Database connection not available")
         raise HTTPException(status_code=500, detail="Database connection error")
     
@@ -619,7 +619,7 @@ async def check_user_interaction(
 async def advice_health_check():
     """Health check endpoint for advice service"""
     try:
-        if not advice_collection:
+        if advice_collection is None:
             return {
                 "status": "unhealthy",
                 "database": "disconnected",

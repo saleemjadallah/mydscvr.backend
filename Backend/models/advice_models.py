@@ -83,8 +83,8 @@ class EventAdviceModel(BaseModel):
             return str(ObjectId())
         return validate_object_id(v)
 
-    @validator('event_id', 'user_id', pre=True)
-    def validate_ids(cls, v):
+    @validator('user_id', pre=True)
+    def validate_user_id(cls, v):
         return validate_object_id(v)
 
     model_config = {
