@@ -57,6 +57,10 @@ jobs:
           REFRESH_TOKEN_EXPIRE_DAYS=30
           EOF
           
+          # Update systemd service file with the corrected version
+          sudo cp Backend/mydscvr-backend.service /etc/systemd/system/mydscvr-backend.service
+          sudo systemctl daemon-reload
+          
           source venv/bin/activate
           pip install -r Backend/requirements.txt
           sudo systemctl restart mydscvr-backend
