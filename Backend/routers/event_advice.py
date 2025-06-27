@@ -16,7 +16,7 @@ from models.advice_models import (
     AdviceCategory,
     AdviceType
 )
-from utils.auth_dependencies import get_current_user
+from utils.auth_dependencies import get_current_verified_user
 from models.user_models import UserModel
 
 # Configure logging
@@ -108,7 +108,7 @@ async def get_event_advice(
 @router.post("/", response_model=EventAdviceModel)
 async def create_advice_direct(
     advice_data: CreateAdviceModel,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Create new advice for an event (direct endpoint for frontend compatibility)"""
     return await create_advice_impl(advice_data, current_user)
@@ -117,7 +117,7 @@ async def create_advice_direct(
 @router.post("/create", response_model=EventAdviceModel)
 async def create_advice(
     advice_data: CreateAdviceModel,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Create new advice for an event (legacy endpoint)"""
     return await create_advice_impl(advice_data, current_user)
@@ -199,7 +199,7 @@ async def create_advice_impl(
 async def update_advice(
     advice_id: str,
     advice_data: CreateAdviceModel,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Update existing advice with ownership validation"""
     if advice_collection is None:
@@ -262,7 +262,7 @@ async def interact_with_advice(
     advice_id: str,
     interaction_type: str,
     reason: Optional[str] = None,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Enhanced helpful functionality with better rating calculation and duplicate prevention"""
     if advice_collection is None:
@@ -472,7 +472,7 @@ async def get_advice_stats(event_id: str):
 @router.delete("/delete/{advice_id}")
 async def delete_advice(
     advice_id: str,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Delete advice with proper authorization"""
     if advice_collection is None:
@@ -534,7 +534,7 @@ async def get_user_advice(
     user_id: str,
     limit: int = Query(10, ge=1, le=50),
     offset: int = Query(0, ge=0),
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Get advice provided by a specific user with proper authorization"""
     if advice_collection is None:
@@ -576,7 +576,7 @@ async def get_user_advice(
 @router.get("/check-user-interaction/{advice_id}")
 async def check_user_interaction(
     advice_id: str,
-    current_user: UserModel = Depends(get_current_user)
+    current_user: UserModel = Depends(get_current_verified_user)
 ):
     """Check if current user has already interacted with specific advice"""
     if advice_collection is None:
