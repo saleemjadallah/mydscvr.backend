@@ -27,11 +27,12 @@ load_dotenv()
 
 router = APIRouter(prefix="/api/advice", tags=["Event Advice"])
 
-# MongoDB connection
+# MongoDB connection using centralized config
+from config import settings
+
 try:
-    MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-    client = MongoClient(MONGO_URL)
-    db = client.DXB
+    client = MongoClient(settings.mongodb_url)
+    db = client[settings.mongodb_database]
     advice_collection = db.event_advice
     events_collection = db.events
     users_collection = db.users
