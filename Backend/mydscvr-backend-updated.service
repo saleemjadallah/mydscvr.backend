@@ -1,0 +1,54 @@
+[Unit]
+Description=MyDSCVR Backend API Service (MongoDB)
+After=network.target mongodb.service
+Wants=network.target
+
+[Service]
+Type=exec
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/backend
+
+# Environment variables
+Environment="PATH=/home/ubuntu/backend/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="VIRTUAL_ENV=/home/ubuntu/backend/venv"
+Environment="PYTHONPATH=/home/ubuntu/backend"
+Environment="PYTHONUNBUFFERED=1"
+
+# Load environment variables from file if it exists
+EnvironmentFile=-/home/ubuntu/backend/Backend.env
+
+# Pre-start dependency check
+ExecStartPre=/bin/bash -c 'cd /home/ubuntu/backend && source venv/bin/activate && pip install -q requests jinja2 PyJWT'
+
+# Main service command with higher log level for debugging
+ExecStart=/home/ubuntu/backend/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --log-level debug --workers 1
+
+# Restart configuration
+Restart=always
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Output logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mydscvr-backend
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening (production-ready)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/backend/logs
+ReadWritePaths=/home/ubuntu/backend/storage
+# Add temp directory for Python packages
+ReadWritePaths=/tmp
+
+[Install]
+WantedBy=multi-user.target
