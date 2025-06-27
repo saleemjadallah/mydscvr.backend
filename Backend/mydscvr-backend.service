@@ -7,19 +7,22 @@ Wants=network.target
 Type=exec
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/home/ubuntu/backend
+WorkingDirectory=/home/ubuntu/mydscvr-backend/Backend
 
 # Environment variables
-Environment="PATH=/home/ubuntu/backend/venv/bin:/usr/local/bin:/usr/bin:/bin"
-Environment="VIRTUAL_ENV=/home/ubuntu/backend/venv"
-Environment="PYTHONPATH=/home/ubuntu/backend"
+Environment="PATH=/home/ubuntu/mydscvr-backend/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="VIRTUAL_ENV=/home/ubuntu/mydscvr-backend/venv"
+Environment="PYTHONPATH=/home/ubuntu/mydscvr-backend/Backend"
 Environment="PYTHONUNBUFFERED=1"
 
+# Load environment variables from Backend.env file
+EnvironmentFile=-/home/ubuntu/mydscvr-backend/Backend/Backend.env
+
 # Pre-start dependency check
-ExecStartPre=/bin/bash -c 'cd /home/ubuntu/backend && source venv/bin/activate && pip install -q requests jinja2 PyJWT'
+ExecStartPre=/bin/bash -c 'cd /home/ubuntu/mydscvr-backend && source venv/bin/activate && pip install -q requests jinja2 PyJWT'
 
 # Main service command
-ExecStart=/home/ubuntu/backend/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info --workers 1
+ExecStart=/home/ubuntu/mydscvr-backend/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info --workers 1
 
 # Restart configuration
 Restart=always
@@ -42,8 +45,8 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/home/ubuntu/backend/logs
-ReadWritePaths=/home/ubuntu/backend/storage
+ReadWritePaths=/home/ubuntu/mydscvr-backend/Backend/logs
+ReadWritePaths=/home/ubuntu/mydscvr-backend/Backend/storage
 
 [Install]
 WantedBy=multi-user.target
