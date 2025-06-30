@@ -1,0 +1,73 @@
+# Environment files containing secrets
+*.env
+!*.env.example
+DataCollection.env
+.env.local
+.env.production
+AI_API.env
+Mongo.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+logs/
+*.log
+debug.log
+cron_collection.log
+perplexity_extraction.log
+perplexity_collection.log
+manual_*.log
+server_collection.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keys and certificates
+*.pem
+*.key
+*.crt
+*.p12
+mydscvrkey.pem
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Data files
+data/
+output/
+*.json
+*.csv
+
+# Cache files
+.pytest_cache/
+.coverage
+
+# Celery
+celerybeat-schedule*
+
+# Archive directories
+archive_*/
+
+# Monitoring output
+monitoring/output/

@@ -1,0 +1,38 @@
+# Dubai Events Data Collection - Perplexity AI Based System
+# Updated: December 2024 - Simplified for Perplexity-only data collection
+
+# Core HTTP and async dependencies
+httpx==0.26.0
+asyncio-throttle==1.0.2
+
+# Configuration and environment
+python-dotenv==1.0.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Logging
+loguru==0.7.2
+
+# MongoDB
+pymongo==4.6.1
+motor==3.3.2
+
+# Data processing and validation
+python-dateutil==2.8.2
+jsonschema==4.20.0
+
+# Retry logic and error handling
+tenacity==8.2.3
+
+# Firecrawl MCP Integration
+mcp>=1.0.0
+
+# Development and testing (optional)
+pytest==7.4.4
+pytest-asyncio==0.23.2
+
+# Utilities
+requests==2.31.0
+
+# Note: Added MCP library for Firecrawl MCP integration
+# System now uses Perplexity AI + Firecrawl MCP for hybrid event discovery 
