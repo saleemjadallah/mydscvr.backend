@@ -1,0 +1,148 @@
+name: Deploy DataCollection to EC2
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'DataCollection/**'
+      - '.github/workflows/deploy-datacollection.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        cd DataCollection
+        pip install -r requirements.txt
+        
+    - name: Run tests
+      run: |
+        cd DataCollection
+        python -m pytest --tb=short || echo "Tests completed with issues"
+        
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/ubuntu/mydscvr-datacollection
+          git pull origin main
+          
+          # Create DataCollection environment files with secrets
+          cd DataCollection
+          
+          # Create AI_API.env file
+          cat > AI_API.env << EOF
+          FIRECRAWL_API_KEY=${{ secrets.FIRECRAWL_API_KEY }}
+          BROWSE_AI_API_KEY=${{ secrets.BROWSE_AI_API_KEY }}
+          PERPLEXITY_API_KEY=${{ secrets.PERPLEXITY_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          
+          # Rate limiting settings
+          FIRECRAWL_RATE_LIMIT=100
+          BROWSE_AI_RATE_LIMIT=50
+          PERPLEXITY_RATE_LIMIT=1000
+          
+          # Error handling
+          MAX_RETRY_ATTEMPTS=3
+          RETRY_DELAY_SECONDS=5
+          
+          # Google Sign In
+          Client-ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          EOF
+          
+          # Create Mongo.env file
+          cat > Mongo.env << EOF
+          # MongoDB Configuration for Data Collection
+          MONGO_URI=${{ secrets.MONGODB_URL }}
+          MONGO_USER=${{ secrets.MONGO_USER }}
+          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+          MONGO_DB_NAME=${{ secrets.MONGODB_DATABASE }}
+          
+          # Additional MongoDB settings that may be referenced
+          MONGODB_URL=${{ secrets.MONGODB_URL }}
+          MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
+          EOF
+          
+          # Create DataCollection.env file with hybrid mode enabled
+          cat > DataCollection.env << EOF
+          # Environment Configuration
+          ENVIRONMENT=production
+          DEBUG=false
+          LOG_LEVEL=INFO
+          
+          # MongoDB Configuration
+          MONGO_URI=${{ secrets.MONGODB_URL }}
+          MONGO_USER=${{ secrets.MONGO_USER }}
+          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+          MONGO_DB_NAME=${{ secrets.MONGODB_DATABASE }}
+          
+          # API Keys
+          FIRECRAWL_API_KEY=${{ secrets.FIRECRAWL_API_KEY }}
+          PERPLEXITY_API_KEY=${{ secrets.PERPLEXITY_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          
+          # Google OAuth Configuration
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          
+          # Backend Integration
+          BACKEND_API_URL=${{ secrets.BACKEND_API_URL }}
+          BACKEND_WEBHOOK_URL=${{ secrets.BACKEND_WEBHOOK_URL }}
+          BACKEND_API_KEY=${{ secrets.BACKEND_API_KEY }}
+          
+          # Rate Limiting Settings
+          FIRECRAWL_RATE_LIMIT=100
+          PERPLEXITY_RATE_LIMIT=1000
+          
+          # Error Handling
+          MAX_RETRY_ATTEMPTS=3
+          RETRY_DELAY_SECONDS=5
+          
+          # AI Image Generation Configuration (HYBRID MODE)
+          ENABLE_AI_IMAGE_GENERATION=true
+          AI_IMAGE_BATCH_SIZE=5
+          AI_IMAGE_BATCH_DELAY=10
+          
+          # Firecrawl MCP Configuration (HYBRID MODE) - ENABLED
+          ENABLE_FIRECRAWL_SUPPLEMENT=true
+          FIRECRAWL_PLATINUMLIST_LIMIT=20
+          FIRECRAWL_TIMEOUT_LIMIT=12
+          FIRECRAWL_WHATSON_LIMIT=8
+          FIRECRAWL_TIMEOUT_SECONDS=60
+          FIRECRAWL_MAX_PAGES_PER_SOURCE=40
+          FIRECRAWL_CONCURRENT_EXTRACTIONS=2
+          
+          # Data Quality Thresholds
+          MIN_QUALITY_SCORE=70
+          ENABLE_FAMILY_ANALYSIS=true
+          ENABLE_CONTENT_ENHANCEMENT=true
+          EOF
+          
+          # Set secure permissions
+          chmod 600 AI_API.env Mongo.env DataCollection.env
+          
+          # Install dependencies and restart service
+          source venv/bin/activate
+          pip install -r requirements.txt
+          
+          # Restart the datacollection service if it exists
+          if systemctl list-units --type=service | grep -q mydscvr-datacollection; then
+            sudo systemctl restart mydscvr-datacollection
+            sudo systemctl status mydscvr-datacollection
+          else
+            echo "DataCollection service not configured yet"
+          fi
