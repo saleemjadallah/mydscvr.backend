@@ -219,6 +219,24 @@ class EventDeduplicator:
         candidates = await self.mongodb.events.find(search_query).limit(5).to_list(length=None)
         return candidates
     
+    def _normalize_title_for_grouping(self, title: str) -> str:
+        """
+        Normalize title for grouping - handles UTF-8 properly
+        """
+        if not title:
+            return ""
+        
+        # Convert to lowercase and remove punctuation
+        normalized = re.sub(r'[^\w\s]', ' ', title.lower())
+        # Replace multiple spaces with single space
+        normalized = re.sub(r'\s+', ' ', normalized).strip()
+        
+        # Take first 3-4 meaningful words for grouping
+        words = [w for w in normalized.split() if w not in self.stop_words and len(w) > 2]
+        key_words = words[:4] if words else [normalized[:15]]
+        
+        return ' '.join(key_words)
+    
     def _extract_key_words(self, text: str) -> List[str]:
         """
         Extract meaningful keywords from text for comparison
@@ -725,48 +743,101 @@ class EventDeduplicator:
     
     async def find_potential_duplicates(self, limit: int = 20) -> List[Dict[str, Any]]:
         """
-        Find potential duplicates that may have been missed
+        Find potential duplicates using Python-based grouping instead of MongoDB $substr
+        This avoids UTF-8 character issues with $substr
         """
         try:
-            # Find events with very similar titles
-            pipeline = [
-                {"$group": {
-                    "_id": {"$substr": ["$title", 0, 20]},
-                    "events": {"$push": "$$ROOT"},
-                    "count": {"$sum": 1}
-                }},
-                {"$match": {"count": {"$gt": 1}}},
-                {"$limit": limit}
-            ]
+            print("🔍 Fetching all event titles and IDs...")
             
-            potential_groups = await self.mongodb.events.aggregate(pipeline).to_list(length=None)
+            # First, get all events with basic info - avoid aggregation with $substr
+            all_events = await self.mongodb.events.find(
+                {},
+                {"title": 1, "venue.name": 1, "start_date": 1, "created_at": 1}
+            ).to_list(length=None)
             
+            print(f"📊 Analyzing {len(all_events)} events for duplicates...")
+            
+            # Group events by normalized title using Python (not MongoDB)
+            title_groups = {}
+            for event in all_events:
+                title = event.get("title", "")
+                normalized_title = self._normalize_title_for_grouping(title)
+                
+                if normalized_title not in title_groups:
+                    title_groups[normalized_title] = []
+                title_groups[normalized_title].append(event)
+            
+            # Find groups with multiple events
             potential_duplicates = []
-            for group in potential_groups:
-                events = group.get("events", [])
-                if len(events) > 1:
-                    # Compare each pair in the group
-                    for i in range(len(events)):
-                        for j in range(i + 1, len(events)):
-                            similarity = self._calculate_similarity_score(events[i], events[j])
-                            if similarity > 0.7:  # Lower threshold for investigation
-                                # Choose which event to keep (older one) and which to remove
-                                older_event = events[i] if events[i].get("created_at", datetime.min) < events[j].get("created_at", datetime.min) else events[j]
-                                newer_event = events[j] if older_event == events[i] else events[i]
-                                
-                                potential_duplicates.append({
-                                    "duplicate_id": newer_event["_id"],  # This will be removed
-                                    "keep_id": older_event["_id"],      # This will be kept
-                                    "similarity_score": similarity,
-                                    "duplicate_title": newer_event["title"],
-                                    "keep_title": older_event["title"],
-                                    "needs_review": similarity < 0.9  # High confidence for 90%+ similarity
-                                })
+            groups_with_duplicates = {k: v for k, v in title_groups.items() if len(v) > 1}
             
-            return potential_duplicates
+            print(f"🔍 Found {len(groups_with_duplicates)} groups with potential duplicates")
+            
+            for normalized_title, events in groups_with_duplicates.items():
+                if len(events) < 2:
+                    continue
+                
+                print(f"  📝 Analyzing group: '{normalized_title}' ({len(events)} events)")
+                
+                # Compare each pair in the group
+                for i in range(len(events)):
+                    for j in range(i + 1, len(events)):
+                        event1 = events[i]
+                        event2 = events[j]
+                        
+                        # Calculate detailed similarity
+                        similarity = self._calculate_text_similarity(
+                            event1.get("title", ""), 
+                            event2.get("title", "")
+                        )
+                        
+                        if similarity > 0.75:  # 75% threshold for investigation
+                            # Choose which event to keep (older one typically has more stable data)
+                            created1 = event1.get("created_at", datetime.min)
+                            created2 = event2.get("created_at", datetime.min)
+                            
+                            if isinstance(created1, str):
+                                try:
+                                    created1 = datetime.fromisoformat(created1.replace('Z', '+00:00'))
+                                except:
+                                    created1 = datetime.min
+                            if isinstance(created2, str):
+                                try:
+                                    created2 = datetime.fromisoformat(created2.replace('Z', '+00:00'))
+                                except:
+                                    created2 = datetime.min
+                            
+                            older_event = event1 if created1 < created2 else event2
+                            newer_event = event2 if older_event == event1 else event1
+                            
+                            potential_duplicates.append({
+                                "duplicate_id": newer_event["_id"],
+                                "keep_id": older_event["_id"],
+                                "similarity_score": similarity,
+                                "duplicate_title": newer_event.get("title", "Unknown"),
+                                "keep_title": older_event.get("title", "Unknown"),
+                                "needs_review": similarity < 0.90,
+                                "group_key": normalized_title
+                            })
+                            
+                            # Limit pairs per group to avoid explosion
+                            if len(potential_duplicates) >= limit * 2:
+                                break
+                    
+                    if len(potential_duplicates) >= limit * 2:
+                        break
+                
+                if len(potential_duplicates) >= limit * 2:
+                    break
+            
+            # Sort by similarity score (highest first) and limit
+            potential_duplicates.sort(key=lambda x: x["similarity_score"], reverse=True)
+            return potential_duplicates[:limit]
             
         except Exception as e:
             print(f"Error finding potential duplicates: {e}")
+            import traceback
+            traceback.print_exc()
             return []
     
     async def find_and_merge_similar_events(self, similarity_threshold: float = 0.8) -> Dict[str, Any]:
@@ -783,23 +854,42 @@ class EventDeduplicator:
                 "comprehensive_events_created": 0
             }
             
-            # Find potential merge groups using title similarity and same venue
-            pipeline = [
-                {"$match": {"start_date": {"$gte": datetime.now(timezone.utc)}}},  # Only future events
-                {"$group": {
-                    "_id": {
-                        "title_prefix": {"$substr": ["$title", 0, 15]},  # First 15 chars
-                        "venue": "$venue.name",
-                        "date": {"$dateToString": {"format": "%Y-%m-%d", "date": "$start_date"}}
-                    },
-                    "events": {"$push": "$$ROOT"},
-                    "count": {"$sum": 1}
-                }},
-                {"$match": {"count": {"$gt": 1}}},
-                {"$limit": 20}  # Process in batches
-            ]
+            # Get future events and group them in Python to avoid UTF-8 issues with $substr
+            future_events = await self.mongodb.events.find(
+                {"start_date": {"$gte": datetime.now(timezone.utc)}},
+                {"title": 1, "venue.name": 1, "start_date": 1, "created_at": 1}
+            ).limit(1000).to_list(length=None)  # Limit for performance
             
-            potential_groups = await self.mongodb.events.aggregate(pipeline).to_list(length=None)
+            # Group events by normalized title + venue + date using Python
+            merge_groups = {}
+            for event in future_events:
+                # Create grouping key
+                title_prefix = self._normalize_title_for_grouping(event.get("title", ""))
+                venue = event.get("venue", {}).get("name", "unknown")
+                try:
+                    start_date = event.get("start_date")
+                    if isinstance(start_date, str):
+                        start_date = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+                    date_str = start_date.strftime("%Y-%m-%d") if start_date else "unknown"
+                except:
+                    date_str = "unknown"
+                
+                group_key = f"{title_prefix}|{venue}|{date_str}"
+                
+                if group_key not in merge_groups:
+                    merge_groups[group_key] = []
+                merge_groups[group_key].append(event)
+            
+            # Convert to potential_groups format for compatibility
+            potential_groups = []
+            for group_key, events in merge_groups.items():
+                if len(events) > 1:
+                    potential_groups.append({
+                        "events": events,
+                        "count": len(events)
+                    })
+                    if len(potential_groups) >= 20:  # Limit processing
+                        break
             merge_stats["groups_found"] = len(potential_groups)
             
             for group in potential_groups:
