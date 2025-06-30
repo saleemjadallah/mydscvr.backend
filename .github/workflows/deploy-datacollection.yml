@@ -31,7 +31,7 @@ jobs:
         cd DataCollection
         python -m pytest --tb=short || echo "Tests completed with issues"
         
-    - name: Deploy to EC2
+    - name: Deploy to EC2 DataCollection Repository
       uses: appleboy/ssh-action@v0.1.5
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -39,13 +39,17 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
+          # Deploy to the dedicated DataCollection repository
           cd /home/ubuntu/mydscvr-datacollection
-          git pull origin main
           
-          # Create DataCollection environment files with secrets
+          # Pull latest changes from the DataCollection repository
+          git remote -v | grep datacollection || git remote add datacollection https://github.com/saleemjadallah/mydscvr.datacollection.git
+          git pull datacollection main || git pull origin main
+          
+          # Navigate to DataCollection directory
           cd DataCollection
           
-          # Create AI_API.env file
+          # Create AI_API.env file with secrets
           cat > AI_API.env << EOF
           FIRECRAWL_API_KEY=${{ secrets.FIRECRAWL_API_KEY }}
           BROWSE_AI_API_KEY=${{ secrets.BROWSE_AI_API_KEY }}
@@ -146,3 +150,7 @@ jobs:
           else
             echo "DataCollection service not configured yet"
           fi
+          
+          # Test hybrid mode configuration
+          echo "🔍 Testing hybrid mode configuration..."
+          python verify_hybrid_mode.py || echo "Verification script not found or failed"
