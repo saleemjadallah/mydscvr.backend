@@ -13,10 +13,10 @@ from database import get_mongodb
 from services.openai_service import openai_service, QueryAnalysis
 from routers.search import _convert_event_to_response, _get_filter_options
 
-router = APIRouter(prefix="/api/search", tags=["ai-search"])
+router = APIRouter(prefix="/api/ai-search", tags=["ai-search"])
 logger = logging.getLogger(__name__)
 
-@router.get("/ai-search")
+@router.get("")
 async def ai_powered_search(
     q: str = Query(..., description="Natural language search query"),
     page: int = Query(1, ge=1),
@@ -228,7 +228,7 @@ async def _fallback_search(query: str, page: int, per_page: int, db: AsyncIOMoto
         logger.error(f"Fallback search also failed: {e}")
         raise HTTPException(status_code=500, detail="Search service temporarily unavailable")
 
-@router.get("/ai-search/status")
+@router.get("/status")
 async def ai_search_status():
     """
     Check AI search service status and configuration
