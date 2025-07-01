@@ -19,6 +19,7 @@ from routers import db_test
 from routers import events
 from routers import hidden_gems
 from routers import search  # Re-enable search functionality
+from routers import ai_search  # OpenAI-powered intelligent search
 # Enhanced Authentication with OTP router (MongoDB-based)
 from routers import auth_with_otp
 # Saved events router for favorites functionality
@@ -220,6 +221,7 @@ app.include_router(events.router)
 # Hidden gems router
 app.include_router(hidden_gems.router)
 app.include_router(search.router)  # Re-enable search functionality
+app.include_router(ai_search.router)  # OpenAI-powered intelligent search
 
 # MongoDB-based notifications router
 from routers import notifications_mongodb

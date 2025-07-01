@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     app_name: str = os.getenv("APP_NAME", "DXB Events API")
     app_version: str = os.getenv("APP_VERSION", "1.0.0")
     debug: bool = os.getenv("DEBUG", "True").lower() == "true"
+    
+    # OpenAI Configuration
+    openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
+    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")  # Most cost-effective model for 2025
+    openai_max_tokens: int = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
+    openai_temperature: float = float(os.getenv("OPENAI_TEMPERATURE", "0.3"))
     cors_origins: List[str] = [
         "http://localhost:3000", 
         "http://localhost:3001", 
