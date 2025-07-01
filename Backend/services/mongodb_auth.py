@@ -92,6 +92,7 @@ class MongoAuthService:
                 last_name=registration_data.last_name,
                 phone_number=registration_data.phone_number,
                 email_verified=email_verified,
+                is_email_verified=email_verified,  # Ensure both fields are consistent
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             )

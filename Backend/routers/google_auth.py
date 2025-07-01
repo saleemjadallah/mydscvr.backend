@@ -103,7 +103,9 @@ async def google_callback(request: Request):
                     {
                         "$set": {
                             "google_id": google_id,
-                            "auth_provider": "both"  # User has both email and Google auth
+                            "auth_provider": "both",  # User has both email and Google auth
+                            "email_verified": True,  # Google emails are pre-verified
+                            "is_email_verified": True  # Google emails are pre-verified
                         }
                     }
                 )
@@ -119,6 +121,7 @@ async def google_callback(request: Request):
                     "google_id": google_id,
                     "auth_provider": "google",
                     "email_verified": True,  # Google emails are pre-verified
+                    "is_email_verified": True,  # Google emails are pre-verified
                     "is_active": True,
                     "created_at": current_time,
                     "updated_at": current_time,
@@ -196,7 +199,9 @@ async def verify_google_token(token_data: Dict[str, Any]):
                     {
                         "$set": {
                             "google_id": google_id,
-                            "auth_provider": "both"
+                            "auth_provider": "both",
+                            "email_verified": True,  # Google emails are pre-verified
+                            "is_email_verified": True  # Google emails are pre-verified
                         }
                     }
                 )
@@ -209,7 +214,8 @@ async def verify_google_token(token_data: Dict[str, Any]):
                     "name": name,
                     "google_id": google_id,
                     "auth_provider": "google",
-                    "email_verified": True,
+                    "email_verified": True,  # Google emails are pre-verified
+                    "is_email_verified": True,  # Google emails are pre-verified
                     "is_active": True,
                     "created_at": current_time,
                     "updated_at": current_time,
@@ -251,7 +257,7 @@ async def verify_google_token(token_data: Dict[str, Any]):
                     "push_notifications": True,
                     "email_notifications": True
                 }),
-                "is_email_verified": existing_user.get("email_verified", True),
+                "is_email_verified": existing_user.get("is_email_verified", True),
                 "is_phone_verified": existing_user.get("phone_verified", False),
                 "created_at": existing_user.get("created_at", "2024-01-01T00:00:00Z"),
                 "updated_at": existing_user.get("updated_at", "2024-01-01T00:00:00Z"),
