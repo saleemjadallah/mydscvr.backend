@@ -466,6 +466,16 @@ async def smart_search(
                 "price_max": 0,
                 "description": "Free events and activities"
             },
+            "events_today": {
+                "tags": ["today", "daily-event", "happening-now"],
+                "date_filter": "today",
+                "description": "Events happening today in Dubai"
+            },
+            "weekend_activities": {
+                "tags": ["weekend", "weekend-event", "family-friendly", "saturday", "sunday"],
+                "date_filter": "weekend",
+                "description": "Weekend activities and events"
+            },
             "weekend_family_fun": {
                 "tags": ["family-friendly", "weekend-event", "kids", "family"],
                 "family_friendly": True,
@@ -516,14 +526,42 @@ async def smart_search(
             }
         }
         
-        # If no intent provided but q is provided, use regular search
+        # If no intent provided but q is provided, analyze query for intent
         if not intent and q:
-            # Use regular search with the query
-            return await _mongodb_search(
-                db, q, None, area, None, None, None, None,
-                None, None, None, None, None,
-                page, per_page, "relevance"
-            )
+            query_lower = q.lower()
+            
+            # Auto-detect intent from query
+            if "today" in query_lower or "happening today" in query_lower:
+                intent = "events_today"
+            elif ("weekend" in query_lower and ("this" in query_lower or "activities" in query_lower or "happening" in query_lower or "events" in query_lower)) or "this weekend" in query_lower:
+                intent = "weekend_activities"
+            elif "free" in query_lower:
+                intent = "find_free_events"
+            elif "indoor" in query_lower:
+                intent = "indoor_activities"
+            elif "outdoor" in query_lower:
+                intent = "outdoor_adventures"
+            elif "brunch" in query_lower:
+                intent = "brunch_events"
+            elif ("kids" in query_lower or "family" in query_lower) and "weekend" in query_lower:
+                intent = "weekend_family_fun"
+            elif "kids" in query_lower or "children" in query_lower:
+                intent = "kids_activities"
+            elif "budget" in query_lower or "cheap" in query_lower or "affordable" in query_lower:
+                intent = "budget_friendly"
+            elif "cultural" in query_lower or "heritage" in query_lower:
+                intent = "cultural_immersion"
+            elif "luxury" in query_lower or "premium" in query_lower or "exclusive" in query_lower:
+                intent = "luxury_experiences"
+            elif "romantic" in query_lower or "couples" in query_lower or "date" in query_lower:
+                intent = "romantic_dates"
+            else:
+                # Use regular search with the query if no intent detected
+                return await _mongodb_search(
+                    db, q, None, area, None, None, None, None,
+                    None, None, None, None, None,
+                    page, per_page, "relevance"
+                )
         
         # If no intent provided and no query, return error
         if not intent:
@@ -554,26 +592,59 @@ async def smart_search(
         if "price_max" in intent_config:
             filter_query["pricing.base_price"] = {"$lte": intent_config["price_max"]}
         
+        # Add date filter for time-based intents
+        if "date_filter" in intent_config:
+            date_filter_type = intent_config["date_filter"]
+            if date_filter_type == "today":
+                # Events happening today
+                from datetime import datetime
+                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                tomorrow = today.replace(hour=23, minute=59, second=59)
+                filter_query["$and"] = filter_query.get("$and", [])
+                filter_query["$and"].extend([
+                    {"start_date": {"$gte": today}},
+                    {"start_date": {"$lte": tomorrow}}
+                ])
+            elif date_filter_type == "weekend":
+                # Events happening this weekend (Saturday and Sunday)
+                from datetime import datetime, timedelta
+                now = datetime.now()
+                days_until_saturday = (5 - now.weekday()) % 7  # Saturday is 5 (Monday = 0)
+                if days_until_saturday == 0 and now.hour >= 18:  # If it's Saturday evening, look at next weekend
+                    days_until_saturday = 7
+                saturday = (now + timedelta(days=days_until_saturday)).replace(hour=0, minute=0, second=0, microsecond=0)
+                sunday_end = saturday.replace(hour=23, minute=59, second=59) + timedelta(days=1)
+                filter_query["$and"] = filter_query.get("$and", [])
+                filter_query["$and"].extend([
+                    {"start_date": {"$gte": saturday}},
+                    {"start_date": {"$lte": sunday_end}}
+                ])
+        
         # Add family-friendly filter
         if "family_friendly" in intent_config:
-            filter_query["$or"] = [
+            family_or = [
                 {"familySuitability.isAllAges": True},
                 {"tags": {"$in": ["family-friendly", "kids", "children"]}}
             ]
+            
+            if "$and" in filter_query:
+                filter_query["$and"].append({"$or": family_or})
+            else:
+                filter_query["$or"] = family_or
         
         # Add area filter if provided
         if area:
             area_filter = {"venue.area": {"$regex": f".*{re.escape(area)}.*", "$options": "i"}}
             
-            if "$or" in filter_query:
-                # Properly combine with existing OR query
+            if "$and" in filter_query:
+                filter_query["$and"].append(area_filter)
+            elif "$or" in filter_query:
+                # Combine with existing OR query
                 existing_or = filter_query.pop("$or")
-                filter_query = {
-                    "$and": [
-                        {"$or": existing_or},
-                        area_filter
-                    ]
-                }
+                filter_query["$and"] = [
+                    {"$or": existing_or},
+                    area_filter
+                ]
             else:
                 filter_query.update(area_filter)
         
