@@ -530,11 +530,21 @@ async def smart_search(
         if not intent and q:
             query_lower = q.lower()
             
-            # Auto-detect intent from query
+            # Auto-detect intent from query - Enhanced detection
             if "today" in query_lower or "happening today" in query_lower:
                 intent = "events_today"
-            elif ("weekend" in query_lower and ("this" in query_lower or "activities" in query_lower or "happening" in query_lower or "events" in query_lower)) or "this weekend" in query_lower:
+            elif "tomorrow" in query_lower or "happening tomorrow" in query_lower:
+                intent = "events_today"  # Use same intent, backend will handle date
+            elif ("weekend" in query_lower and ("this" in query_lower or "activities" in query_lower or "happening" in query_lower or "events" in query_lower)) or "this weekend" in query_lower or "next weekend" in query_lower:
                 intent = "weekend_activities"
+            elif ("week" in query_lower and ("this" in query_lower or "next" in query_lower)) or "this week" in query_lower or "next week" in query_lower:
+                intent = "weekend_activities"  # Reuse weekend logic for week queries
+            elif ("month" in query_lower and ("this" in query_lower or "next" in query_lower)) or "this month" in query_lower or "next month" in query_lower:
+                intent = "weekend_activities"  # Reuse for broader time ranges
+            elif "upcoming" in query_lower or "coming up" in query_lower or "happening soon" in query_lower or "next few days" in query_lower:
+                intent = "weekend_activities"  # Reuse for general upcoming events
+            elif any(day in query_lower for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]):
+                intent = "weekend_activities"  # Handle specific day queries
             elif "free" in query_lower:
                 intent = "find_free_events"
             elif "indoor" in query_lower:
