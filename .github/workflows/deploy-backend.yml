@@ -65,3 +65,15 @@ jobs:
           pip install -r Backend/requirements.txt
           sudo systemctl restart mydscvr-backend
           sudo systemctl status mydscvr-backend
+          
+          # Fix nginx API proxy configuration
+          echo "🔧 Fixing nginx API proxy configuration..."
+          cd Backend
+          chmod +x fix_nginx_api_proxy.sh
+          sudo ./fix_nginx_api_proxy.sh
+          
+          # Final verification
+          echo "🧪 Final API verification..."
+          sleep 5
+          curl -s https://mydscvr.xyz/api/advice/health || echo "Advice endpoint still not accessible"
+          curl -s https://mydscvr.xyz/health | head -c 100
