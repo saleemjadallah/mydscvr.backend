@@ -27,10 +27,10 @@ router = APIRouter(prefix="/api/advice", tags=["Event Advice"])
 
 
 async def get_current_verified_user(
-    current_user: UserModel = Depends(get_current_user_dependency)
-) -> UserModel:
+    current_user: dict = Depends(get_current_user_dependency)
+) -> dict:
     """Get current verified user (MongoDB-based)"""
-    if not current_user.is_email_verified:
+    if not current_user.get("is_email_verified", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Email verification required"
@@ -103,7 +103,7 @@ async def get_event_advice(
 @router.post("/", response_model=EventAdviceModel)
 async def create_advice_direct(
     advice_data: CreateAdviceModel,
-    current_user: UserModel = Depends(get_current_verified_user),
+    current_user: dict = Depends(get_current_verified_user),
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """Create new advice for an event (direct endpoint for frontend compatibility)"""
@@ -126,11 +126,11 @@ async def create_advice_direct(
         # Check if user already provided advice for this event
         existing_advice = await advice_collection.find_one({
             "event_id": advice_data.event_id,
-            "user_id": str(current_user.id)
+            "user_id": str(current_user.get("id") or current_user.get("_id"))
         })
         
         if existing_advice:
-            logger.warning(f"User {current_user.id} attempted to create duplicate advice for event {advice_data.event_id}")
+            logger.warning(f"User {current_user.get('id') or current_user.get('_id')} attempted to create duplicate advice for event {advice_data.event_id}")
             raise HTTPException(
                 status_code=400, 
                 detail="You have already provided advice for this event. You can update your existing advice instead."
@@ -139,9 +139,9 @@ async def create_advice_direct(
         # Create advice document
         advice_doc = {
             "event_id": advice_data.event_id,
-            "user_id": str(current_user.id),
-            "user_name": current_user.first_name or current_user.email.split('@')[0],
-            "user_avatar": getattr(current_user, 'avatar', None),
+            "user_id": str(current_user.get("id") or current_user.get("_id")),
+            "user_name": current_user.get("first_name") or current_user.get("email", "").split('@')[0],
+            "user_avatar": current_user.get("avatar"),
             "title": advice_data.title,
             "content": advice_data.content,
             "category": advice_data.category.value,
@@ -164,7 +164,7 @@ async def create_advice_direct(
         result = await advice_collection.insert_one(advice_doc)
         advice_doc["_id"] = str(result.inserted_id)
         
-        logger.info(f"Created new advice {result.inserted_id} for event {advice_data.event_id} by user {current_user.id}")
+        logger.info(f"Created new advice {result.inserted_id} for event {advice_data.event_id} by user {current_user.get('id') or current_user.get('_id')}")
         return EventAdviceModel(**advice_doc)
         
     except HTTPException:
@@ -178,7 +178,7 @@ async def create_advice_direct(
 async def interact_with_advice(
     advice_id: str,
     interaction_data: dict,
-    current_user: UserModel = Depends(get_current_verified_user),
+    current_user: dict = Depends(get_current_verified_user),
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """Enhanced helpful functionality with better rating calculation and duplicate prevention"""
@@ -201,7 +201,7 @@ async def interact_with_advice(
             logger.warning(f"Attempt to interact with non-existent advice: {advice_id}")
             raise HTTPException(status_code=404, detail="Advice not found")
         
-        user_id = str(current_user.id)
+        user_id = str(current_user.get("id") or current_user.get("_id"))
         
         # Prevent users from rating their own advice
         if advice["user_id"] == user_id:
