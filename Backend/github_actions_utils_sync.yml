@@ -1,0 +1,97 @@
+name: Sync Utils from Backend
+
+on:
+  # Trigger when datacollection repo is pushed
+  push:
+    branches: [ main ]
+  
+  # Trigger when backend repo is updated (via repository_dispatch)
+  repository_dispatch:
+    types: [backend-updated]
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  sync-utils:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout datacollection repo
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: datacollection
+    
+    - name: Checkout backend repo for utils
+      uses: actions/checkout@v4
+      with:
+        repository: saleemjadallah/mydscvr.backend
+        token: ${{ secrets.BACKEND_ACCESS_TOKEN }} # Optional: for private repo
+        path: backend
+    
+    - name: Sync utils from backend to datacollection
+      run: |
+        echo "🔄 Syncing utils from backend to datacollection..."
+        
+        # Navigate to datacollection directory
+        cd datacollection
+        
+        # Remove existing utils if present
+        if [ -d "utils" ]; then
+          echo "🗑️ Removing old utils..."
+          rm -rf utils
+        fi
+        
+        # Copy utils from backend
+        echo "📋 Copying utils from backend repo..."
+        cp -r ../backend/utils ./
+        
+        # Verify the sync
+        echo "✅ Utils synced. Files copied:"
+        find utils/ -name "*.py" | head -10
+    
+    - name: Commit and push if utils changed
+      run: |
+        cd datacollection
+        
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Check if there are changes
+        if git diff --quiet utils/; then
+          echo "No changes in utils, skipping commit"
+        else
+          echo "📝 Committing updated utils..."
+          git add utils/
+          git commit -m "🔄 Sync utils from backend repo (automated)"
+          git push
+        fi
+    
+    - name: Deploy to server (if needed)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "🚀 Triggering server deployment..."
+        # Add your deployment commands here
+        # Example: SSH to server and pull latest code
+        # ssh user@server "cd /path/to/datacollection && git pull && ./setup.sh"
+
+---
+# Instructions for setup:
+# 
+# 1. Add this file to .github/workflows/ in your mydscvr.datacollection repo
+# 
+# 2. If mydscvr.backend is private, create a Personal Access Token:
+#    - Go to GitHub Settings > Developer settings > Personal access tokens
+#    - Create token with 'repo' scope
+#    - Add as secret named 'BACKEND_ACCESS_TOKEN' in datacollection repo settings
+# 
+# 3. To trigger sync when backend is updated, add this to backend repo's workflow:
+#    - name: Notify datacollection repo
+#      run: |
+#        curl -X POST \
+#          -H "Authorization: token ${{ secrets.DATACOLLECTION_DISPATCH_TOKEN }}" \
+#          -H "Accept: application/vnd.github.v3+json" \
+#          https://api.github.com/repos/saleemjadallah/mydscvr.datacollection/dispatches \
+#          -d '{"event_type":"backend-updated"}' 
