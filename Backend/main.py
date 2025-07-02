@@ -14,6 +14,13 @@ from database import init_databases, close_databases
 # Import permanent CORS middleware
 from utils.cors_middleware import PermanentCORSMiddleware
 
+# Configure logging BEFORE using logger
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
 # Import routers
 from routers import db_test
 from routers import events
@@ -36,13 +43,6 @@ from routers import saved_events
 from routers import event_advice
 # Google OAuth router
 from routers import google_auth
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
