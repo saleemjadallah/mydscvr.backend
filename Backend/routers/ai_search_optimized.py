@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import List, Optional, Dict, Any
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 
 from database import get_mongodb
@@ -61,6 +61,13 @@ async def optimized_ai_search(
             tomorrow_start = tomorrow_start.replace(day=tomorrow_start.day + 1)
             tomorrow_end = tomorrow_start.replace(hour=23, minute=59, second=59)
             filter_query["start_date"] = {"$gte": tomorrow_start, "$lte": tomorrow_end}
+        elif any(phrase in query_lower for phrase in ["this week", "events this week"]):
+            # This week detection - Monday to Sunday of current week
+            now = datetime.now()
+            days_since_monday = now.weekday()  # Monday = 0, Sunday = 6
+            monday = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday)
+            sunday = monday + timedelta(days=6, hours=23, minutes=59, seconds=59)
+            filter_query["start_date"] = {"$gte": monday, "$lte": sunday}
         elif "weekend" in query_lower:
             # Simple weekend detection
             now = datetime.now()
@@ -79,19 +86,35 @@ async def optimized_ai_search(
                 {"tags": {"$in": ["family-friendly", "kids", "children"]}}
             ]
         
-        # Step 3: Fetch limited events for AI processing
+        # Step 3: Fetch limited events for AI processing with optimized fields
         skip = (page - 1) * per_page
         
-        # Get 20 events max for fast AI processing
-        events_cursor = db.events.find(filter_query).sort("start_date", 1).limit(20)
-        events = await events_cursor.to_list(length=20)
+        # Optimize MongoDB query to reduce tokens - fetch only relevant fields
+        projection = {
+            "_id": 1,
+            "title": 1,
+            "description": 1,
+            "start_date": 1,
+            "end_date": 1,
+            "venue.name": 1,
+            "venue.area": 1,
+            "category": 1,
+            "tags": 1,
+            "familyScore": 1,
+            "price": 1,
+            "pricing.base_price": 1
+        }
+        
+        # Get 100 events max to prevent token overflow, but only send necessary fields
+        events_cursor = db.events.find(filter_query, projection).sort("start_date", 1).limit(100)
+        events = await events_cursor.to_list(length=100)
         
         logger.info(f"Optimized AI Search: Found {len(events)} initial events")
         
         if not events:
             # Quick fallback search without filters
-            fallback_cursor = db.events.find({"status": "active"}).sort("start_date", 1).limit(10)
-            events = await fallback_cursor.to_list(length=10)
+            fallback_cursor = db.events.find({"status": "active"}, projection).sort("start_date", 1).limit(50)
+            events = await fallback_cursor.to_list(length=50)
         
         # Step 4: Single AI call for analysis and scoring
         ai_result = await optimized_openai_service.analyze_and_score(q, events)

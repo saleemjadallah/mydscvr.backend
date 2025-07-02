@@ -37,7 +37,14 @@ class OptimizedOpenAIService:
     def __init__(self):
         self.enabled = bool(settings.openai_api_key)
         self.client = None
-        self.model = "gpt-4o-mini"  # Fast model
+        
+        # Configuration as per requirements
+        self.model = "gpt-4o-mini"  # Cost-effective, fast, good for search tasks
+        self.temperature = 0.3      # Lower temperature for more consistent results
+        self.max_tokens = 1000      # Adjust based on your needs
+        self.top_p = 0.9           # Slightly focused responses
+        self.frequency_penalty = 0.0
+        self.presence_penalty = 0.0
         
         if self.enabled:
             try:
@@ -109,43 +116,71 @@ class OptimizedOpenAIService:
                 }
                 event_summaries.append(summary)
             
-            # Single optimized prompt that does everything
-            system_prompt = """You are an AI event assistant for Dubai. Analyze the query and score events in ONE response.
+            # System prompt as per requirements
+            system_prompt = """You are an intelligent search assistant for an events database. Your role is to analyze user search queries and match them with relevant events from the provided MongoDB collection data.
 
-RESPOND WITH ONLY VALID JSON. No explanations or markdown.
+CRITICAL RULES:
+1. You MUST ONLY reference events that exist in the provided data
+2. Never invent, hallucinate, or reference events not in the database
+3. If no events match the search criteria, clearly state that no matching events were found
+4. Always cite the specific event IDs when referencing events
 
-Output format:
+Your tasks:
+1. Analyze the user's search keywords and intent
+2. Identify all relevant events from the provided database entries
+3. Provide a concise summary of matching events
+4. Rank results by relevance to the search query
+
+When matching events, consider:
+- Event titles and descriptions
+- Event categories or types
+- Dates and times
+- Locations
+- Tags or keywords
+- Any other relevant fields in your schema
+
+Current date: """ + datetime.now().strftime("%Y-%m-%d (%A)") + """
+
+RESPOND WITH ONLY VALID JSON matching this exact format:
 {
   "keywords": ["extracted", "keywords"],
   "time_period": "today/tomorrow/weekend/week/month/null",
   "date_from": "YYYY-MM-DD or null",
-  "date_to": "YYYY-MM-DD or null", 
+  "date_to": "YYYY-MM-DD or null",
   "categories": ["relevant", "categories"],
   "family_friendly": true/false/null,
-  "ai_response": "1-2 friendly sentences about results",
-  "suggestions": ["4 related searches"],
+  "ai_response": "Brief summary of search results",
+  "suggestions": ["4 related search suggestions"],
   "scored_events": [
     {
-      "id": "event_id",
+      "id": "event_id_from_database",
       "score": 0-100,
-      "reason": "1 sentence why it matches"
+      "reason": "Brief explanation of why this event matches"
     }
   ]
-}
+}"""
 
-Current date: """ + datetime.now().strftime("%Y-%m-%d (%A)")
+            # User prompt template as per requirements
+            user_prompt = f"""Search Query: {query}
 
-            user_prompt = f"""Query: "{query}"
-
-Events to score:
+Database Events:
 {json.dumps(event_summaries, indent=2)}
 
-Analyze the query and score each event's relevance (0-100) based on:
-- Keyword matches in title/description/tags
-- Date/time alignment
-- Category fit
-- Family suitability if relevant
-"""
+Please analyze the search query and find all matching events from the database provided above. Return your response in the following format:
+
+1. SEARCH INTERPRETATION: Brief explanation of what you understood the user is looking for
+
+2. MATCHING EVENTS: List all events that match the search criteria with:
+   - Event ID
+   - Event Title
+   - Relevance Score (1-100)
+   - Brief explanation of why this event matches
+
+3. SUMMARY: A 2-3 sentence summary of the search results
+
+4. NO MATCHES: If no events match, explain why and suggest how the user might refine their search
+
+Remember: Only reference events that exist in the provided database data. Return ONLY the JSON response, no additional text."""
 
             response = await self.client.chat.completions.create(
                 model=self.model,
@@ -153,8 +188,11 @@ Analyze the query and score each event's relevance (0-100) based on:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                max_tokens=800,  # Single call, optimized
-                temperature=0.3  # Consistent results
+                max_tokens=self.max_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty
             )
             
             raw_content = response.choices[0].message.content
