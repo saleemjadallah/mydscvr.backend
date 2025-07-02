@@ -112,8 +112,13 @@ Current date context: Today is """ + datetime.now().strftime("%Y-%m-%d (%A)")
             # Prepare event data for AI analysis (limit to essential fields to save tokens)
             event_summaries = []
             for event in events[:20]:  # Limit to prevent token overflow
+                # Convert datetime to string if necessary
+                start_date = event.get("start_date", "")
+                if isinstance(start_date, datetime):
+                    start_date = start_date.isoformat()
+                
                 summary = {
-                    "id": str(event.get("id", "")),
+                    "id": str(event.get("_id", event.get("id", ""))),  # Handle both _id and id
                     "title": event.get("title", ""),
                     "description": (event.get("description", "") or "")[:200],  # Truncate description
                     "category": event.get("category", ""),
@@ -122,9 +127,9 @@ Current date context: Today is """ + datetime.now().strftime("%Y-%m-%d (%A)")
                         "name": event.get("venue", {}).get("name", ""),
                         "area": event.get("venue", {}).get("area", "")
                     },
-                    "price": event.get("price", {}),
-                    "family_score": event.get("family_score"),
-                    "start_date": event.get("start_date", ""),
+                    "price": event.get("pricing", event.get("price", {})),  # Handle both pricing and price fields
+                    "family_score": event.get("familyScore", event.get("family_score")),  # Handle both camelCase and snake_case
+                    "start_date": start_date,
                     "age_range": event.get("age_range", "")
                 }
                 event_summaries.append(summary)
