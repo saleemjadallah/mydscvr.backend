@@ -52,6 +52,10 @@ jobs:
           PERPLEXITY_API_KEY=${{ secrets.PERPLEXITY_API_KEY }}
           WEBHOOK_API_KEY=${{ secrets.WEBHOOK_API_KEY }}
           ZEPTO_API_KEY=${{ secrets.ZEPTO_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL=gpt-4o-mini
+          OPENAI_MAX_TOKENS=1000
+          OPENAI_TEMPERATURE=0.3
           DEBUG=False
           ACCESS_TOKEN_EXPIRE_MINUTES=10080
           REFRESH_TOKEN_EXPIRE_DAYS=30
