@@ -70,17 +70,16 @@ jobs:
           EOF
           
           # Update systemd service file with the corrected version
-          sudo cp Backend/mydscvr-backend.service /etc/systemd/system/mydscvr-backend.service
+          sudo cp mydscvr-backend.service /etc/systemd/system/mydscvr-backend.service
           sudo systemctl daemon-reload
           
           source venv/bin/activate
-          pip install -r Backend/requirements.txt
+          pip install -r requirements.txt
           sudo systemctl restart mydscvr-backend
           sudo systemctl status mydscvr-backend
           
           # Fix nginx API proxy configuration
           echo "🔧 Fixing nginx API proxy configuration..."
-          cd Backend
           chmod +x fix_nginx_api_proxy.sh
           sudo ./fix_nginx_api_proxy.sh
           
