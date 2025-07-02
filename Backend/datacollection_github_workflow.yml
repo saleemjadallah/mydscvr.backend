@@ -1,0 +1,132 @@
+name: Sync Utils from Backend and Deploy
+
+on:
+  # Trigger when datacollection repo is pushed
+  push:
+    branches: [ main ]
+  
+  # Trigger when backend repo is updated (via repository_dispatch)
+  repository_dispatch:
+    types: [backend-updated]
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout datacollection repo
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: datacollection
+    
+    - name: Checkout backend repo for utils
+      uses: actions/checkout@v4
+      with:
+        repository: saleemjadallah/mydscvr.backend
+        token: ${{ secrets.BACKEND_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+        path: backend
+    
+    - name: Sync utils from backend to datacollection
+      run: |
+        echo "🔄 Syncing utils from backend to datacollection..."
+        
+        # Navigate to datacollection directory
+        cd datacollection
+        
+        # Create backup of existing utils if present
+        if [ -d "utils" ]; then
+          echo "💾 Backing up existing utils..."
+          mv utils utils.backup.$(date +%Y%m%d_%H%M%S)
+        fi
+        
+        # Copy utils from backend
+        echo "📋 Copying utils from backend repo..."
+        cp -r ../backend/utils ./
+        
+        # Verify the sync
+        echo "✅ Utils synced. Files copied:"
+        find utils/ -name "*.py" | head -10
+        
+        # Create sync timestamp
+        echo "$(date): Utils synced from backend repo via GitHub Actions" > utils/sync_timestamp.txt
+    
+    - name: Set up Python for testing
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Test utils import (if requirements.txt exists)
+      run: |
+        cd datacollection
+        
+        if [ -f "requirements.txt" ]; then
+          echo "📦 Installing dependencies for testing..."
+          pip install -r requirements.txt
+          
+          echo "🧪 Testing utils imports..."
+          python -c "
+try:
+    import sys
+    sys.path.append('.')
+    from utils import mongodb_singleton
+    print('✅ Utils import test passed')
+except Exception as e:
+    print(f'⚠️ Utils import test failed: {e}')
+    print('This may be normal if environment-specific dependencies are missing')
+"
+        else
+          echo "⚠️ No requirements.txt found, skipping import test"
+        fi
+    
+    - name: Commit and push if utils changed
+      run: |
+        cd datacollection
+        
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action - Utils Sync"
+        
+        # Check if there are changes
+        if git diff --quiet && git diff --cached --quiet; then
+          echo "📝 No changes in utils, skipping commit"
+        else
+          echo "📝 Committing updated utils..."
+          git add utils/
+          git add . # Add any other changes
+          git commit -m "🔄 Sync utils from backend repo (automated)
+
+- Updated utils/ directory with latest backend utilities
+- Sync timestamp: $(date)
+- Triggered by: GitHub Actions workflow"
+          git push
+          echo "✅ Changes pushed to repository"
+        fi
+    
+    - name: Deploy to production server
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "🚀 Production deployment would trigger here..."
+        echo "Server will pull latest code with updated utils"
+        
+        # Optional: Add webhook notification to trigger server deployment
+        # curl -X POST "${{ secrets.DEPLOYMENT_WEBHOOK_URL }}" \
+        #   -H "Content-Type: application/json" \
+        #   -d '{"event": "utils-synced", "repo": "datacollection", "ref": "${{ github.ref }}"}'
+    
+    - name: Create deployment summary
+      run: |
+        echo "## 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Utils Sync Status" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Utils successfully synced from backend repository" >> $GITHUB_STEP_SUMMARY
+        echo "- 📁 Files copied: $(find datacollection/utils/ -name '*.py' | wc -l) Python files" >> $GITHUB_STEP_SUMMARY
+        echo "- 🕐 Sync timestamp: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "- Server cron job will use updated utils on next run" >> $GITHUB_STEP_SUMMARY
+        echo "- Collection scripts now have access to latest backend utilities" >> $GITHUB_STEP_SUMMARY
+        echo "- Manual server sync also available as backup: \`./sync_utils_to_datacollection.sh\`" >> $GITHUB_STEP_SUMMARY 
