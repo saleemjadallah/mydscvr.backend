@@ -91,10 +91,11 @@ async def ai_powered_search(
         # Step 3: Fetch events from database
         skip = (page - 1) * per_page
         
-        # Get larger pool for AI ranking
-        max_events_for_ai = min(100, per_page * 5)  # Get 5x requested amount for better AI selection
+        # Get optimized pool for AI ranking - reduced for performance
+        max_events_for_ai = min(30, per_page * 2)  # Get 2x requested amount for faster processing
         
-        events_cursor = db.events.find(filter_query).limit(max_events_for_ai)
+        # Sort by start_date to get more relevant events first
+        events_cursor = db.events.find(filter_query).sort("start_date", 1).limit(max_events_for_ai)
         events = await events_cursor.to_list(length=max_events_for_ai)
         
         logger.info(f"AI Search: Found {len(events)} events matching filters")
@@ -105,7 +106,7 @@ async def ai_powered_search(
                 "events": [],
                 "ai_response": await openai_service.generate_response(q, [], analysis),
                 "suggestions": await openai_service.suggest_followups(q, analysis, 0),
-                "query_analysis": analysis.dict(),
+                "query_analysis": analysis.model_dump(),
                 "pagination": {
                     "page": page,
                     "per_page": per_page,
@@ -120,6 +121,26 @@ async def ai_powered_search(
         
         # Step 4: Use OpenAI to intelligently score and rank events
         logger.info(f"AI Search: Using OpenAI to score {len(events)} events")
+        
+        # If we have too many events, do a quick pre-filter to speed up AI processing
+        if len(events) > 15:
+            # Simple relevance filter based on text matching before AI scoring
+            query_words = set(q.lower().split())
+            
+            def quick_score(event):
+                title_words = set((event.get('title', '') or '').lower().split())
+                desc_words = set((event.get('description', '') or '')[:100].lower().split())
+                tags_words = set(' '.join(event.get('tags', [])).lower().split())
+                
+                all_words = title_words | desc_words | tags_words
+                matches = len(query_words & all_words)
+                return matches
+            
+            # Sort by quick relevance and keep top 15 for AI scoring
+            events.sort(key=quick_score, reverse=True)
+            events = events[:15]
+            logger.info(f"AI Search: Pre-filtered to {len(events)} events for AI scoring")
+        
         scored_events = await openai_service.match_events(q, events, analysis)
         
         # Step 5: Apply pagination to AI-ranked results
@@ -153,7 +174,7 @@ async def ai_powered_search(
             "events": event_responses,
             "ai_response": ai_response,
             "suggestions": suggestions,
-            "query_analysis": analysis.dict(),
+            "query_analysis": analysis.model_dump(),
             "pagination": {
                 "page": page,
                 "per_page": per_page,
