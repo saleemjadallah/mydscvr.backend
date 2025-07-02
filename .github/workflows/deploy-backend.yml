@@ -39,11 +39,19 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          cd /home/ubuntu/mydscvr-backend
+          cd /home/ubuntu/backend
           git pull origin main
           
+          # Move Backend subdirectory contents up if they exist (for transition)
+          if [ -d "Backend" ]; then
+            echo "Moving Backend directory contents up one level..."
+            mv Backend/* . 2>/dev/null || true
+            mv Backend/.* . 2>/dev/null || true
+            rmdir Backend 2>/dev/null || true
+          fi
+          
           # Create Backend.env file with secrets
-          cat > Backend/Backend.env << EOF
+          cat > Backend.env << EOF
           MONGODB_URL=${{ secrets.MONGODB_URL }}
           MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
