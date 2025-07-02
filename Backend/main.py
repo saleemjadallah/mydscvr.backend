@@ -35,6 +35,14 @@ except Exception as e:
     logger.error(f"❌ Failed to import AI search router: {e}")
     ai_search = None
 
+# Import optimized AI search router (single OpenAI call)
+try:
+    from routers import ai_search_optimized  # Optimized AI search with <5s response
+    logger.info("✅ Optimized AI search router imported successfully")
+except Exception as e:
+    logger.error(f"❌ Failed to import optimized AI search router: {e}")
+    ai_search_optimized = None
+
 # Enhanced Authentication with OTP router (MongoDB-based)
 from routers import auth_with_otp
 # Saved events router for favorites functionality
@@ -235,7 +243,14 @@ if ai_search is not None:
     app.include_router(ai_search.router)  # OpenAI-powered intelligent search
     logger.info("✅ AI search router included successfully")
 else:
-    logger.error("❌ AI search router not available due to import error")
+    logger.warning("⚠️ AI search router not available")
+
+# Include optimized AI search router if available
+if ai_search_optimized is not None:
+    app.include_router(ai_search_optimized.router)  # Optimized single-call AI search
+    logger.info("✅ Optimized AI search router included successfully")
+else:
+    logger.warning("⚠️ Optimized AI search router not available")
 
 # MongoDB-based notifications router
 from routers import notifications_mongodb
