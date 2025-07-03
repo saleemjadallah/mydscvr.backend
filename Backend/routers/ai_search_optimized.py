@@ -45,75 +45,293 @@ async def optimized_ai_search(
                 ]
             })
         
+        # Base filter with proper date filtering to exclude old events
+        current_time = datetime.now()
         filter_query = {
             "status": "active",
-            "$and": text_conditions
-        } if text_conditions else {"status": "active"}
+            "end_date": {"$gte": current_time}  # Only events that haven't ended yet
+        }
         
-        # Quick date detection
+        # Add text search conditions
+        if text_conditions:
+            filter_query["$and"] = text_conditions
+        
+        # Advanced temporal query detection
         query_lower = q.lower()
+        now = datetime.now()
+        
+        # Today and tonight
         if any(word in query_lower for word in ["today", "tonight"]):
-            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            tomorrow = today.replace(hour=23, minute=59, second=59)
-            filter_query["start_date"] = {"$gte": today, "$lte": tomorrow}
+            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+            if "tonight" in query_lower:
+                # Tonight = after 6 PM today
+                today_start = now.replace(hour=18, minute=0, second=0, microsecond=0)
+            filter_query["start_date"] = {"$gte": today_start, "$lte": today_end}
+            
+        # Tomorrow
         elif "tomorrow" in query_lower:
-            tomorrow_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            tomorrow_start = tomorrow_start.replace(day=tomorrow_start.day + 1)
-            tomorrow_end = tomorrow_start.replace(hour=23, minute=59, second=59)
+            tomorrow_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+            tomorrow_end = tomorrow_start.replace(hour=23, minute=59, second=59, microsecond=999999)
             filter_query["start_date"] = {"$gte": tomorrow_start, "$lte": tomorrow_end}
+            
+        # This morning/afternoon
+        elif "this morning" in query_lower:
+            morning_start = now.replace(hour=6, minute=0, second=0, microsecond=0)
+            morning_end = now.replace(hour=12, minute=0, second=0, microsecond=0)
+            filter_query["start_date"] = {"$gte": morning_start, "$lte": morning_end}
+        elif "this afternoon" in query_lower:
+            afternoon_start = now.replace(hour=12, minute=0, second=0, microsecond=0)
+            afternoon_end = now.replace(hour=18, minute=0, second=0, microsecond=0)
+            filter_query["start_date"] = {"$gte": afternoon_start, "$lte": afternoon_end}
+            
+        # This weekend (current or upcoming) - Check BEFORE "this week" to avoid substring match
+        elif any(phrase in query_lower for phrase in ["this weekend", "weekend"]):
+            if now.weekday() >= 5:  # If today is Saturday or Sunday
+                # Current weekend
+                if now.weekday() == 5:  # Saturday
+                    weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                else:  # Sunday
+                    weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+                weekend_end = weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
+            else:
+                # Upcoming weekend
+                days_until_saturday = (5 - now.weekday()) % 7
+                if days_until_saturday == 0:
+                    days_until_saturday = 7
+                weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=days_until_saturday)
+                weekend_end = weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
+            
+            logger.info(f"Weekend detection: {weekend_start} to {weekend_end}")
+            # Advanced logic: Find events that overlap with the weekend period
+            # This includes: events starting during weekend, events ending during weekend, 
+            # and events that span the entire weekend period
+            filter_query["$or"] = [
+                # Events that start during the weekend
+                {"start_date": {"$gte": weekend_start, "$lte": weekend_end}},
+                # Events that end during the weekend  
+                {"end_date": {"$gte": weekend_start, "$lte": weekend_end}},
+                # Events that span the entire weekend (start before, end after)
+                {"$and": [
+                    {"start_date": {"$lte": weekend_start}},
+                    {"end_date": {"$gte": weekend_end}}
+                ]}
+            ]
+            
+        # This week
         elif any(phrase in query_lower for phrase in ["this week", "events this week"]):
-            # This week detection - Monday to Sunday of current week
-            now = datetime.now()
             days_since_monday = now.weekday()  # Monday = 0, Sunday = 6
             monday = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday)
-            sunday = monday + timedelta(days=6, hours=23, minutes=59, seconds=59)
-            filter_query["start_date"] = {"$gte": monday, "$lte": sunday}
-        elif "weekend" in query_lower:
-            # Simple weekend detection
-            now = datetime.now()
-            days_until_saturday = (5 - now.weekday()) % 7
-            if days_until_saturday == 0 and now.hour >= 18:
-                days_until_saturday = 7
-            saturday = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            saturday = saturday.replace(day=saturday.day + days_until_saturday)
-            sunday = saturday.replace(day=saturday.day + 1, hour=23, minute=59, second=59)
-            filter_query["start_date"] = {"$gte": saturday, "$lte": sunday}
-        
-        # Family detection
-        if any(word in query_lower for word in ["family", "kids", "children"]):
+            sunday = monday + timedelta(days=6, hours=23, minutes=59, seconds=59, microseconds=999999)
+            
+            # Advanced logic: Find events that overlap with this week period
             filter_query["$or"] = [
-                {"familyScore": {"$gte": 60}},
-                {"tags": {"$in": ["family-friendly", "kids", "children"]}}
+                {"start_date": {"$gte": monday, "$lte": sunday}},
+                {"end_date": {"$gte": monday, "$lte": sunday}},
+                {"$and": [
+                    {"start_date": {"$lte": monday}},
+                    {"end_date": {"$gte": sunday}}
+                ]}
+            ]
+            
+        # Next week
+        elif any(phrase in query_lower for phrase in ["next week", "events next week"]):
+            days_since_monday = now.weekday()
+            next_monday = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday) + timedelta(days=7)
+            next_sunday = next_monday + timedelta(days=6, hours=23, minutes=59, seconds=59, microseconds=999999)
+            
+            # Advanced logic: Find events that overlap with next week period
+            filter_query["$or"] = [
+                {"start_date": {"$gte": next_monday, "$lte": next_sunday}},
+                {"end_date": {"$gte": next_monday, "$lte": next_sunday}},
+                {"$and": [
+                    {"start_date": {"$lte": next_monday}},
+                    {"end_date": {"$gte": next_sunday}}
+                ]}
+            ]
+            
+        # Next weekend
+        elif "next weekend" in query_lower:
+            days_until_saturday = (5 - now.weekday()) % 7
+            if days_until_saturday == 0:
+                days_until_saturday = 7
+            next_weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=days_until_saturday + 7)
+            next_weekend_end = next_weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
+            
+            # Advanced logic: Find events that overlap with next weekend period
+            filter_query["$or"] = [
+                {"start_date": {"$gte": next_weekend_start, "$lte": next_weekend_end}},
+                {"end_date": {"$gte": next_weekend_start, "$lte": next_weekend_end}},
+                {"$and": [
+                    {"start_date": {"$lte": next_weekend_start}},
+                    {"end_date": {"$gte": next_weekend_end}}
+                ]}
+            ]
+            
+        # This month
+        elif any(phrase in query_lower for phrase in ["this month", "events this month"]):
+            month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            # Get last day of current month
+            if now.month == 12:
+                month_end = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
+            else:
+                month_end = now.replace(month=now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
+            filter_query["start_date"] = {"$gte": month_start, "$lte": month_end}
+            
+        # Next month
+        elif any(phrase in query_lower for phrase in ["next month", "events next month"]):
+            if now.month == 12:
+                next_month_start = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+                next_month_end = now.replace(year=now.year + 1, month=2, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
+            else:
+                next_month_start = now.replace(month=now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0)
+                if now.month == 11:
+                    next_month_end = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
+                else:
+                    next_month_end = now.replace(month=now.month + 2, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
+            filter_query["start_date"] = {"$gte": next_month_start, "$lte": next_month_end}
+        
+        # Price detection and filtering
+        if any(word in query_lower for word in ["free", "free events"]):
+            filter_query["$or"] = [
+                {"price": {"$regex": "free", "$options": "i"}},
+                {"pricing.base_price": 0},
+                {"price": "0"},
+                {"price": "Free"}
+            ]
+        elif any(word in query_lower for word in ["cheap", "budget", "affordable"]):
+            filter_query["$or"] = [
+                {"pricing.base_price": {"$lte": 50}},
+                {"price_data.min": {"$lte": 50}}
+            ]
+        elif any(word in query_lower for word in ["expensive", "premium", "luxury"]):
+            filter_query["$or"] = [
+                {"pricing.base_price": {"$gte": 200}},
+                {"price_data.min": {"$gte": 200}}
+            ]
+            
+        # Location detection (Dubai areas)
+        location_matches = {
+            "downtown": ["downtown", "dubai mall", "burj khalifa"],
+            "marina": ["marina", "marina walk", "marina mall"],
+            "jbr": ["jbr", "jumeirah beach residence", "the beach", "the walk"],
+            "business bay": ["business bay"],
+            "difc": ["difc", "financial centre"],
+            "jumeirah": ["jumeirah", "jumeirah beach"],
+            "deira": ["deira", "old dubai", "gold souk"]
+        }
+        
+        for area, patterns in location_matches.items():
+            if any(pattern in query_lower for pattern in patterns):
+                filter_query["$or"] = [
+                    {"venue.area": {"$regex": area, "$options": "i"}},
+                    {"location": {"$regex": area, "$options": "i"}},
+                    {"address": {"$regex": area, "$options": "i"}}
+                ]
+                break
+                
+        # Category and activity type detection
+        category_matches = {
+            "music": ["concerts", "music", "concert"],
+            "arts": ["art", "exhibitions", "exhibition", "gallery"],
+            "sports": ["sports", "fitness", "workout", "gym"],
+            "dining": ["restaurant", "dining", "food", "brunch", "dinner"],
+            "nightlife": ["nightlife", "bar", "club", "nightclub"],
+            "cultural": ["cultural", "museum", "heritage"],
+            "educational": ["workshops", "classes", "workshop", "class", "learning"]
+        }
+        
+        for category, patterns in category_matches.items():
+            if any(pattern in query_lower for pattern in patterns):
+                filter_query["$or"] = [
+                    {"category": category},
+                    {"primary_category": category},
+                    {"secondary_categories": category},
+                    {"tags": {"$in": patterns}}
+                ]
+                break
+                
+        # Family and age detection
+        if any(word in query_lower for word in ["family", "family-friendly", "family events"]):
+            filter_query["$or"] = [
+                {"is_family_friendly": True},
+                {"familyScore": {"$gte": 70}},
+                {"tags": {"$in": ["family-friendly", "family", "kids"]}}
+            ]
+        elif any(word in query_lower for word in ["kids", "children", "children activities"]):
+            filter_query["$or"] = [
+                {"age_min": {"$lte": 12}},
+                {"tags": {"$in": ["children", "kids", "toddler"]}}
+            ]
+        elif any(word in query_lower for word in ["adults only", "adult only", "18+"]):
+            filter_query["$or"] = [
+                {"age_min": {"$gte": 18}},
+                {"age_restrictions": {"$regex": "18\\+", "$options": "i"}}
+            ]
+            
+        # Indoor/outdoor detection
+        if any(word in query_lower for word in ["outdoor", "outdoor activities"]):
+            filter_query["$or"] = [
+                {"venue_type": "outdoor"},
+                {"indoor_outdoor": "outdoor"}
+            ]
+        elif any(word in query_lower for word in ["indoor", "indoor activities"]):
+            filter_query["$or"] = [
+                {"venue_type": "indoor"},
+                {"indoor_outdoor": "indoor"}
             ]
         
         # Step 3: Fetch limited events for AI processing with optimized fields
         skip = (page - 1) * per_page
         
-        # Optimize MongoDB query to reduce tokens - fetch only relevant fields
+        # Enhanced MongoDB projection for comprehensive search support
         projection = {
             "_id": 1,
             "title": 1,
             "description": 1,
             "start_date": 1,
             "end_date": 1,
-            "venue.name": 1,
-            "venue.area": 1,
+            "status": 1,
             "category": 1,
+            "primary_category": 1,
+            "secondary_categories": 1,
             "tags": 1,
-            "familyScore": 1,
+            "location": 1,
+            "address": 1,
+            "venue": 1,  # Include full venue object
             "price": 1,
-            "pricing.base_price": 1
+            "pricing": 1,  # Include full pricing object
+            "price_data": 1,
+            "familyScore": 1,
+            "is_family_friendly": 1,
+            "age_min": 1,
+            "age_max": 1,
+            "age_group": 1,
+            "age_restrictions": 1,
+            "target_audience": 1,
+            "event_url": 1,
+            "image_url": 1,
+            "image_urls": 1,
+            "venue_type": 1,
+            "indoor_outdoor": 1,
+            "event_type": 1,
+            "source_name": 1
         }
         
         # Get 100 events max to prevent token overflow, but only send necessary fields
+        logger.info(f"MongoDB query: {filter_query}")
         events_cursor = db.events.find(filter_query, projection).sort("start_date", 1).limit(100)
         events = await events_cursor.to_list(length=100)
         
         logger.info(f"Optimized AI Search: Found {len(events)} initial events")
         
         if not events:
-            # Quick fallback search without filters
-            fallback_cursor = db.events.find({"status": "active"}, projection).sort("start_date", 1).limit(50)
+            # Quick fallback search with proper date filtering
+            fallback_filter = {
+                "status": "active",
+                "end_date": {"$gte": current_time}
+            }
+            fallback_cursor = db.events.find(fallback_filter, projection).sort("start_date", 1).limit(50)
             events = await fallback_cursor.to_list(length=50)
         
         # Step 4: Single AI call for analysis and scoring
