@@ -32,10 +32,14 @@ async def optimized_ai_search(
         # Step 1: Quick keyword extraction for initial filtering
         keywords = q.lower().split()
         
-        # Step 2: Build smart MongoDB query
-        # Start with basic text search across multiple fields
+        # Step 2: Build smart MongoDB query with meaningful keywords only
+        # Filter out common stop words and extract meaningful search terms
+        stop_words = {"where", "can", "i", "my", "take", "what", "is", "are", "the", "a", "an", "to", "for", "in", "on", "at", "this", "that"}
+        meaningful_keywords = [word for word in keywords if word.lower() not in stop_words and len(word) > 2]
+        
+        # Start with basic text search across multiple fields using meaningful keywords only
         text_conditions = []
-        for keyword in keywords[:3]:  # Limit to first 3 keywords
+        for keyword in meaningful_keywords[:3]:  # Limit to first 3 meaningful keywords
             text_conditions.append({
                 "$or": [
                     {"title": {"$regex": keyword, "$options": "i"}},
@@ -191,24 +195,37 @@ async def optimized_ai_search(
                     next_month_end = now.replace(month=now.month + 2, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
             filter_query["start_date"] = {"$gte": next_month_start, "$lte": next_month_end}
         
-        # Price detection and filtering
+        # Price detection and filtering - use $and to avoid conflicts
+        price_conditions = []
         if any(word in query_lower for word in ["free", "free events"]):
-            filter_query["$or"] = [
-                {"price": {"$regex": "free", "$options": "i"}},
-                {"pricing.base_price": 0},
-                {"price": "0"},
-                {"price": "Free"}
-            ]
+            price_conditions.append({
+                "$or": [
+                    {"price": {"$regex": "free", "$options": "i"}},
+                    {"pricing.base_price": 0},
+                    {"price": "0"},
+                    {"price": "Free"}
+                ]
+            })
         elif any(word in query_lower for word in ["cheap", "budget", "affordable"]):
-            filter_query["$or"] = [
-                {"pricing.base_price": {"$lte": 50}},
-                {"price_data.min": {"$lte": 50}}
-            ]
+            price_conditions.append({
+                "$or": [
+                    {"pricing.base_price": {"$lte": 50}},
+                    {"price_data.min": {"$lte": 50}}
+                ]
+            })
         elif any(word in query_lower for word in ["expensive", "premium", "luxury"]):
-            filter_query["$or"] = [
-                {"pricing.base_price": {"$gte": 200}},
-                {"price_data.min": {"$gte": 200}}
-            ]
+            price_conditions.append({
+                "$or": [
+                    {"pricing.base_price": {"$gte": 200}},
+                    {"price_data.min": {"$gte": 200}}
+                ]
+            })
+        
+        # Add price conditions to the main filter
+        if price_conditions:
+            if "$and" not in filter_query:
+                filter_query["$and"] = []
+            filter_query["$and"].extend(price_conditions)
             
         # Location detection (Dubai areas)
         location_matches = {
@@ -221,14 +238,24 @@ async def optimized_ai_search(
             "deira": ["deira", "old dubai", "gold souk"]
         }
         
+        # Location filtering - use $and to avoid conflicts
+        location_conditions = []
         for area, patterns in location_matches.items():
             if any(pattern in query_lower for pattern in patterns):
-                filter_query["$or"] = [
-                    {"venue.area": {"$regex": area, "$options": "i"}},
-                    {"location": {"$regex": area, "$options": "i"}},
-                    {"address": {"$regex": area, "$options": "i"}}
-                ]
+                location_conditions.append({
+                    "$or": [
+                        {"venue.area": {"$regex": area, "$options": "i"}},
+                        {"location": {"$regex": area, "$options": "i"}},
+                        {"address": {"$regex": area, "$options": "i"}}
+                    ]
+                })
                 break
+        
+        # Add location conditions to the main filter
+        if location_conditions:
+            if "$and" not in filter_query:
+                filter_query["$and"] = []
+            filter_query["$and"].extend(location_conditions)
                 
         # Category and activity type detection
         category_matches = {
@@ -241,33 +268,56 @@ async def optimized_ai_search(
             "educational": ["workshops", "classes", "workshop", "class", "learning"]
         }
         
+        # Category filtering - use $and to avoid conflicts
+        category_conditions = []
         for category, patterns in category_matches.items():
             if any(pattern in query_lower for pattern in patterns):
-                filter_query["$or"] = [
-                    {"category": category},
-                    {"primary_category": category},
-                    {"secondary_categories": category},
-                    {"tags": {"$in": patterns}}
-                ]
+                category_conditions.append({
+                    "$or": [
+                        {"category": category},
+                        {"primary_category": category},
+                        {"secondary_categories": category},
+                        {"tags": {"$in": patterns}}
+                    ]
+                })
                 break
+        
+        # Add category conditions to the main filter
+        if category_conditions:
+            if "$and" not in filter_query:
+                filter_query["$and"] = []
+            filter_query["$and"].extend(category_conditions)
                 
-        # Family and age detection
+        # Family and age detection - use $and to avoid overwriting other $or conditions
+        family_conditions = []
         if any(word in query_lower for word in ["family", "family-friendly", "family events"]):
-            filter_query["$or"] = [
-                {"is_family_friendly": True},
-                {"familyScore": {"$gte": 70}},
-                {"tags": {"$in": ["family-friendly", "family", "kids"]}}
-            ]
+            family_conditions.append({
+                "$or": [
+                    {"is_family_friendly": True},
+                    {"familyScore": {"$gte": 70}},
+                    {"tags": {"$in": ["family-friendly", "family", "kids"]}}
+                ]
+            })
         elif any(word in query_lower for word in ["kids", "children", "children activities"]):
-            filter_query["$or"] = [
-                {"age_min": {"$lte": 12}},
-                {"tags": {"$in": ["children", "kids", "toddler"]}}
-            ]
+            family_conditions.append({
+                "$or": [
+                    {"age_min": {"$lte": 12}},
+                    {"tags": {"$in": ["children", "kids", "toddler"]}}
+                ]
+            })
         elif any(word in query_lower for word in ["adults only", "adult only", "18+"]):
-            filter_query["$or"] = [
-                {"age_min": {"$gte": 18}},
-                {"age_restrictions": {"$regex": "18\\+", "$options": "i"}}
-            ]
+            family_conditions.append({
+                "$or": [
+                    {"age_min": {"$gte": 18}},
+                    {"age_restrictions": {"$regex": "18\\+", "$options": "i"}}
+                ]
+            })
+        
+        # Add family conditions to the main filter
+        if family_conditions:
+            if "$and" not in filter_query:
+                filter_query["$and"] = []
+            filter_query["$and"].extend(family_conditions)
             
         # Indoor/outdoor detection
         if any(word in query_lower for word in ["outdoor", "outdoor activities"]):
@@ -326,40 +376,48 @@ async def optimized_ai_search(
         logger.info(f"Optimized AI Search: Found {len(events)} initial events")
         
         if not events:
-            # Quick fallback search with proper date filtering
+            # Quick fallback search with proper date filtering and variety
             fallback_filter = {
                 "status": "active",
                 "end_date": {"$gte": current_time}
             }
-            fallback_cursor = db.events.find(fallback_filter, projection).sort("start_date", 1).limit(50)
+            # Use random sampling to get more diverse events instead of always the same ones
+            fallback_cursor = db.events.aggregate([
+                {"$match": fallback_filter},
+                {"$sample": {"size": 50}},  # Random sampling for variety
+                {"$project": projection}
+            ])
             events = await fallback_cursor.to_list(length=50)
         
         # Step 4: Single AI call for analysis and scoring
         ai_result = await optimized_openai_service.analyze_and_score(q, events)
         
-        # Step 5: Apply AI scoring to events
-        scored_events = []
-        event_scores = {score["id"]: score for score in ai_result.scored_events}
+        # Step 5: Apply AI scoring to events - COMMENTED OUT (always returns 40)
+        # scored_events = []
+        # event_scores = {score["id"]: score for score in ai_result.scored_events}
+        # 
+        # for event in events:
+        #     event_id = str(event.get("_id", ""))
+        #     if event_id in event_scores:
+        #         score_data = event_scores[event_id]
+        #         scored_events.append({
+        #             "event": event,
+        #             "score": score_data["score"],
+        #             "reason": score_data["reason"]
+        #         })
+        #     else:
+        #         # Include unscored events with default score
+        #         scored_events.append({
+        #             "event": event,
+        #             "score": 40,
+        #             "reason": "Additional result"
+        #         })
+        # 
+        # # Sort by score
+        # scored_events.sort(key=lambda x: x["score"], reverse=True)
         
-        for event in events:
-            event_id = str(event.get("_id", ""))
-            if event_id in event_scores:
-                score_data = event_scores[event_id]
-                scored_events.append({
-                    "event": event,
-                    "score": score_data["score"],
-                    "reason": score_data["reason"]
-                })
-            else:
-                # Include unscored events with default score
-                scored_events.append({
-                    "event": event,
-                    "score": 40,
-                    "reason": "Additional result"
-                })
-        
-        # Sort by score
-        scored_events.sort(key=lambda x: x["score"], reverse=True)
+        # Simplified: Just use events directly without scoring
+        scored_events = [{"event": event, "score": None, "reason": None} for event in events]
         
         # Step 6: Apply pagination
         total_scored = len(scored_events)
@@ -369,8 +427,10 @@ async def optimized_ai_search(
         event_responses = []
         for item in paginated_scored:
             event_response = await _convert_event_to_response(item["event"])
-            event_response["ai_score"] = item["score"]
-            event_response["ai_reasoning"] = item["reason"]
+            # Only add AI score fields if they exist (commented out scoring system)
+            if item["score"] is not None:
+                event_response["ai_score"] = item["score"]
+                event_response["ai_reasoning"] = item["reason"]
             event_responses.append(event_response)
         
         # Calculate response time
