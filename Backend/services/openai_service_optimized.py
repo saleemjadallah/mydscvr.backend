@@ -101,16 +101,35 @@ class OptimizedOpenAIService:
             )
         
         try:
-            # Prepare event summaries (keep it minimal for speed)
+            # Prepare event summaries with complete date information
             event_summaries = []
             for event in events[:15]:  # Max 15 events
+                start_date = event.get("start_date")
+                end_date = event.get("end_date")
+                
+                # Format dates for AI understanding
+                start_date_str = str(start_date).split("T")[0] if start_date else ""
+                end_date_str = str(end_date).split("T")[0] if end_date else ""
+                
+                # Create a clear date range description
+                if start_date_str and end_date_str:
+                    if start_date_str == end_date_str:
+                        date_info = f"On {start_date_str}"
+                    else:
+                        date_info = f"From {start_date_str} to {end_date_str}"
+                else:
+                    date_info = start_date_str or "Date TBD"
+                
                 summary = {
                     "id": str(event.get("_id", "")),
                     "title": event.get("title", ""),
-                    "date": str(event.get("start_date", "")).split("T")[0] if event.get("start_date") else "",
+                    "start_date": start_date_str,
+                    "end_date": end_date_str,
+                    "date_range": date_info,
                     "category": event.get("category", ""),
                     "area": event.get("venue", {}).get("area", ""),
                     "family_score": event.get("familyScore", 0),
+                    "price": event.get("pricing", {}).get("base_price", 0) if event.get("pricing") else "TBD",
                     "tags": event.get("tags", [])[:3],  # First 3 tags only
                     "description_snippet": (event.get("description", "") or "")[:100]
                 }
@@ -147,18 +166,25 @@ Events in the database have these fields:
 TEMPORAL SEARCH UNDERSTANDING:
 Today's date is: {datetime.now().strftime("%Y-%m-%d (%A)")}
 
-When users search with temporal keywords, interpret them as follows:
-- "today" = events where start_date is on {datetime.now().strftime("%Y-%m-%d")}
-- "tomorrow" = events where start_date is on {(datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")}
-- "this weekend" = events on the upcoming Saturday and Sunday
-- "next weekend" = events on the following Saturday and Sunday
-- "this week" = events from current Monday to Sunday
-- "next week" = events from next Monday to Sunday
-- "this month" = all events in the current month
-- "next month" = all events in the following month
-- "tonight" = events today with start_date after 6 PM
-- "this morning" = events today with start_date before 12 PM
-- "this afternoon" = events today with start_date between 12 PM and 6 PM
+IMPORTANT: Events can match temporal queries in multiple ways:
+1. Events that START during the requested period
+2. Events that END during the requested period  
+3. Events that SPAN/COVER the entire requested period (start before, end after)
+
+For example, if someone searches "this weekend" (Saturday {(datetime.now() + timedelta(days=(5-datetime.now().weekday())%7)).strftime("%Y-%m-%d")} and Sunday {(datetime.now() + timedelta(days=(5-datetime.now().weekday())%7+1)).strftime("%Y-%m-%d")}):
+- An event from 2025-01-01 to 2025-12-31 DOES match because it covers the weekend
+- An event on Friday-Saturday DOES match because it ends during weekend  
+- An event on Saturday-Monday DOES match because it starts during weekend
+
+When users search with temporal keywords, consider ALL events that overlap:
+- "today" = events that occur on or span {datetime.now().strftime("%Y-%m-%d")}
+- "tomorrow" = events that occur on or span {(datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")}
+- "this weekend" = events that occur on or span the upcoming Saturday and Sunday
+- "next weekend" = events that occur on or span the following Saturday and Sunday
+- "this week" = events that occur during or span current Monday to Sunday
+- "next week" = events that occur during or span next Monday to Sunday
+- "this month" = events that occur during or span the current month
+- "next month" = events that occur during or span the following month
 
 PRICE & COST UNDERSTANDING:
 When users search with price-related keywords:
@@ -247,10 +273,16 @@ MATCHING INSTRUCTIONS:
    - Age/family criteria
    - Any other specific requirements
 
-2. Match events by checking ALL relevant fields in the MongoDB schema
-3. For compound queries, ALL criteria must match
-4. Consider partial text matches in title, description, and tags fields
-5. Pay attention to event status - exclude cancelled events unless specifically requested
+2. For TEMPORAL queries, carefully check the date_range field:
+   - If searching "this weekend" and an event shows "From 2025-01-01 to 2025-12-31", this DOES match because it spans the weekend
+   - If searching "today" and an event shows "From 2025-07-01 to 2025-07-10", this DOES match if today falls within that range
+   - Look at both start_date, end_date, and date_range to determine if events overlap with the requested time period
+
+3. Match events by checking ALL relevant fields in the MongoDB schema
+4. For compound queries, ALL criteria must match  
+5. Consider partial text matches in title, description, and tags fields
+6. Pay attention to event status - exclude cancelled events unless specifically requested
+7. IMPORTANT: If you find events that match the criteria, do NOT say "no events found" - acknowledge the matches!
 
 Return your response in the following format:
 
