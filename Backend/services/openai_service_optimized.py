@@ -144,6 +144,8 @@ CRITICAL RULES:
 3. If no events match the search criteria, clearly state that no matching events were found
 4. Always cite the specific event IDs when referencing events
 5. Consider all available fields in the MongoDB schema when matching
+6. BE ACCURATE: If the user searches for "this weekend" and you find events, do NOT say "no events this weekend"
+7. BE SPECIFIC: Reference actual event titles and dates when summarizing
 
 MONGODB SCHEMA UNDERSTANDING:
 Events in the database have these fields:
@@ -165,6 +167,7 @@ Events in the database have these fields:
 
 TEMPORAL SEARCH UNDERSTANDING:
 Today's date is: {datetime.now().strftime("%Y-%m-%d (%A)")}
+Current weekend: Saturday {(datetime.now() + timedelta(days=(5-datetime.now().weekday())%7)).strftime("%Y-%m-%d")} and Sunday {(datetime.now() + timedelta(days=(5-datetime.now().weekday())%7+1)).strftime("%Y-%m-%d")}
 
 IMPORTANT: Events can match temporal queries in multiple ways:
 1. Events that START during the requested period
@@ -211,6 +214,12 @@ FAMILY & AGE UNDERSTANDING:
 - "toddler friendly" = age_min <= 3
 - "teen events" = suitable for ages 13-17
 
+IMPORTANT: When searching for "kids" or "children":
+- EXCLUDE nightlife events (clubs, bars, adult shows)
+- EXCLUDE events with age_min >= 18
+- PREFER events with high familyScore (>70)
+- PREFER events tagged as "family-friendly", "kids", "children"
+
 CATEGORY UNDERSTANDING:
 Map user queries to primary_category and secondary_categories:
 - "things to do" = any category
@@ -228,6 +237,15 @@ Handle multiple criteria in single queries:
 - "free weekend family events" = Combine temporal + price + family filters
 - "outdoor activities in Marina" = Combine venue_type + location filters
 - "cheap things to do tomorrow night" = Combine price + temporal + time filters
+- "kids weekend" = Must show ONLY kid-friendly events happening this weekend
+
+AI RESPONSE GUIDELINES:
+1. Count matching events: Start with "Found X events" or "No events found"
+2. For temporal queries: Be specific about the date range you're checking
+3. For kids queries: Emphasizes family-friendly nature of results
+4. List 2-3 specific examples with titles and dates if events were found
+5. If no exact matches: Explain what was missing and suggest alternatives
+6. Keep response under 3 sentences, be concise and helpful
 
 RESPOND WITH ONLY VALID JSON matching this exact format:
 {{
@@ -254,10 +272,21 @@ RESPOND WITH ONLY VALID JSON matching this exact format:
             current_day_name = now.strftime("%A")
             current_time = now.strftime("%H:%M")
             
+            # Calculate weekend dates for clarity
+            days_until_saturday = (5 - now.weekday()) % 7
+            if days_until_saturday == 0 and now.weekday() == 5:  # Already Saturday
+                weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            elif now.weekday() == 6:  # Sunday
+                weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+            else:
+                weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=days_until_saturday)
+            weekend_end = weekend_start + timedelta(days=1)
+            
             user_prompt = f"""Search Query: {query}
 Current Date: {current_date}
 Current Day of Week: {current_day_name}
 Current Time: {current_time}
+This Weekend: {weekend_start.strftime("%B %d")} - {weekend_end.strftime("%B %d, %Y")}
 
 Database Events:
 {json.dumps(event_summaries, indent=2)}
@@ -270,7 +299,7 @@ MATCHING INSTRUCTIONS:
    - Price criteria (free, budget, specific amounts)
    - Location criteria (areas, venues)
    - Category/type criteria
-   - Age/family criteria
+   - Age/family criteria (CRITICAL for "kids" searches)
    - Any other specific requirements
 
 2. For TEMPORAL queries, carefully check the date_range field:
@@ -278,47 +307,27 @@ MATCHING INSTRUCTIONS:
    - If searching "today" and an event shows "From 2025-07-01 to 2025-07-10", this DOES match if today falls within that range
    - Look at both start_date, end_date, and date_range to determine if events overlap with the requested time period
 
-3. Match events by checking ALL relevant fields in the MongoDB schema
-4. For compound queries, ALL criteria must match  
-5. Consider partial text matches in title, description, and tags fields
-6. Pay attention to event status - exclude cancelled events unless specifically requested
-7. IMPORTANT: If you find events that match the criteria, do NOT say "no events found" - acknowledge the matches!
+3. For KIDS/FAMILY queries:
+   - Check family_score (prefer > 70)
+   - Check tags for "family", "kids", "children"
+   - EXCLUDE events with nightlife categories
+   - EXCLUDE events with age restrictions 18+
+   - Look for educational, cultural, arts categories
 
-Return your response in the following format:
+4. Match events by checking ALL relevant fields in the MongoDB schema
+5. For compound queries, ALL criteria must match  
+6. Consider partial text matches in title, description, and tags fields
+7. Pay attention to event status - exclude cancelled events unless specifically requested
+8. IMPORTANT: If you find events that match the criteria, do NOT say "no events found" - acknowledge the matches!
 
-1. SEARCH INTERPRETATION: 
-   - What the user is looking for
-   - Identified criteria: temporal, price, location, category, age group
-   - Any ambiguities or assumptions made
+Generate an accurate AI response that:
+- States the number of events found (or if none found)
+- For temporal queries: Mentions the specific dates being searched
+- For kids queries: Emphasizes family-friendly nature of results
+- Lists 2-3 specific event examples if found
+- Is helpful and accurate - don't claim "no events" if events exist
 
-2. FILTER CALCULATION:
-   - Date range: [if applicable]
-   - Price range: [if applicable]
-   - Location filter: [if applicable]
-   - Category filter: [if applicable]
-   - Age filter: [if applicable]
-
-3. MATCHING EVENTS: List all events that match with:
-   - Event ID (_id)
-   - Event Title
-   - Date/Time (formatted nicely)
-   - Price (show actual price or range)
-   - Location (venue.name, venue.area)
-   - Family Score (if relevant to query)
-   - Match Score (1-10)
-   - Match Reason (explain which criteria matched)
-
-4. SUMMARY: A concise 2-3 sentence summary highlighting:
-   - Number of events found
-   - Key characteristics of the results
-   - Any notable patterns or recommendations
-
-5. NO MATCHES: If no events match:
-   - Explain which criteria couldn't be satisfied
-   - Suggest query modifications
-   - List closest alternatives if any exist
-
-Remember: Only reference events that exist in the provided database data. Return ONLY the JSON response, no additional text."""
+Return ONLY the JSON response, no additional text."""
 
             response = await self.client.chat.completions.create(
                 model=self.model,
