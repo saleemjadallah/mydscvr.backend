@@ -3,9 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import time
 import logging
+import os
 
 # Import configuration and database
 from config import settings
@@ -60,6 +62,15 @@ app = FastAPI(
     docs_url="/docs" if settings.debug else None,
     redoc_url="/redoc" if settings.debug else None,
 )
+
+# Mount static files for serving AI-generated images
+image_storage_path = getattr(settings, 'image_storage_path', './storage/images')
+if not os.path.exists(image_storage_path):
+    os.makedirs(image_storage_path, exist_ok=True)
+    logger.info(f"✅ Created image storage directory: {image_storage_path}")
+
+app.mount("/images", StaticFiles(directory=image_storage_path), name="images")
+logger.info(f"✅ Mounted static image storage at /images from {image_storage_path}")
 
 # CORS middleware will be added at the end of the file
 

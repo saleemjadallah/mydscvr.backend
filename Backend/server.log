@@ -4795,3 +4795,1348 @@ INFO:     Waiting for application startup.
 2025-07-04 07:41:44,980 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
 2025-07-04 07:41:44,980 - main - INFO - 📋 MongoDB Atlas database: DXB
 INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'setup_algolia.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:44:25,460 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84418]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:44:27,107 - main - INFO - ✅ AI search router imported successfully
+WARNING:  WatchFiles detected changes in 'setup_algolia.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:44:28,256 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:44:28,277 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:44:28,278 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:44:28,356 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:44:28,357 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:44:28,657 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:44:28,661 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [84839]
+INFO:     Waiting for application startup.
+2025-07-04 07:44:29,836 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:44:29,836 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:44:29,836 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'setup_algolia.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:44:42,996 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84839]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:44:45,208 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:44:45,235 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:44:45,236 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:44:45,312 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:44:45,312 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:44:45,563 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:44:45,568 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [84890]
+INFO:     Waiting for application startup.
+2025-07-04 07:44:46,768 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:44:46,768 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:44:46,768 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'setup_algolia.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:44:48,209 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84890]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:44:49,808 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:44:49,829 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:44:49,830 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:44:49,900 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:44:49,900 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:44:50,130 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:44:50,134 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [84904]
+INFO:     Waiting for application startup.
+2025-07-04 07:44:51,334 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:44:51,334 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:44:51,334 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:46:48,177 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [84904]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'test_algolia.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:46:50,228 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:46:50,249 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:46:50,250 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:46:50,321 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:46:50,322 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:46:50,546 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:46:50,550 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [85026]
+INFO:     Waiting for application startup.
+2025-07-04 07:46:51,764 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:46:51,765 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:46:51,765 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:46:54,321 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85026]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:46:56,603 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:46:56,627 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:46:56,628 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:46:56,721 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:46:56,722 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:46:56,990 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:46:56,994 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [85056]
+INFO:     Waiting for application startup.
+2025-07-04 07:46:58,178 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:46:58,178 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:46:58,178 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:49:42,813 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85056]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:49:44,788 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:49:44,809 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:49:44,810 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:49:44,881 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:49:44,881 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:49:44,882 - main - ERROR - ❌ Failed to import Algolia search router: No module named 'algoliasearch.search_client'
+2025-07-04 07:49:44,882 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85241]
+INFO:     Waiting for application startup.
+2025-07-04 07:49:46,152 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:49:46,153 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:49:46,153 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:49:50,728 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85241]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:49:52,712 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:49:52,735 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:49:52,736 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:49:52,810 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:49:52,810 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:49:52,811 - main - ERROR - ❌ Failed to import Algolia search router: No module named 'algoliasearch.search_client'
+2025-07-04 07:49:52,811 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85300]
+INFO:     Waiting for application startup.
+2025-07-04 07:49:53,977 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:49:53,977 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:49:53,977 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:50:50,089 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85300]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:50:51,842 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:50:51,863 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:50:51,864 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:50:51,934 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:50:51,934 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:50:51,935 - main - ERROR - ❌ Failed to import Algolia search router: cannot import name 'SearchClient' from 'algoliasearch' (/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/algoliasearch/__init__.py)
+2025-07-04 07:50:51,935 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85426]
+INFO:     Waiting for application startup.
+2025-07-04 07:50:53,131 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:50:53,132 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:50:53,132 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:50:55,788 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85426]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:50:57,723 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:50:57,744 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:50:57,745 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:50:57,816 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:50:57,817 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:50:57,817 - main - ERROR - ❌ Failed to import Algolia search router: cannot import name 'SearchClient' from 'algoliasearch' (/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/algoliasearch/__init__.py)
+2025-07-04 07:50:57,817 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85474]
+INFO:     Waiting for application startup.
+2025-07-04 07:50:58,987 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:50:58,987 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:50:58,987 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:51:01,053 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85474]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:51:02,795 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:51:02,816 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:51:02,817 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:51:02,883 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:51:02,884 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:51:02,885 - main - ERROR - ❌ Failed to import Algolia search router: cannot import name 'SearchClient' from 'algoliasearch' (/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/algoliasearch/__init__.py)
+2025-07-04 07:51:02,885 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85506]
+INFO:     Waiting for application startup.
+2025-07-04 07:51:04,058 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:51:04,058 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:51:04,059 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:51:08,433 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85506]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:51:09,727 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:51:09,748 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:51:09,749 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:51:09,817 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:51:09,818 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:51:09,819 - main - ERROR - ❌ Failed to import Algolia search router: cannot import name 'SearchClient' from 'algoliasearch' (/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/algoliasearch/__init__.py)
+2025-07-04 07:51:09,819 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85535]
+INFO:     Waiting for application startup.
+2025-07-04 07:51:10,995 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:51:10,995 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:51:10,995 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:51:13,947 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85535]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:51:15,658 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:51:15,679 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:51:15,680 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:51:15,751 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:51:15,752 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:51:15,753 - main - ERROR - ❌ Failed to import Algolia search router: cannot import name 'SearchClient' from 'algoliasearch' (/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/algoliasearch/__init__.py)
+2025-07-04 07:51:15,753 - main - WARNING - ⚠️ Algolia search router not available
+INFO:     Started server process [85567]
+INFO:     Waiting for application startup.
+2025-07-04 07:51:17,013 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:51:17,013 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:51:17,013 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:55:33,152 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85567]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:55:34,882 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:55:34,903 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:55:34,904 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:55:34,976 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:55:34,977 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:55:35,205 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:55:35,209 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [85847]
+INFO:     Waiting for application startup.
+2025-07-04 07:55:36,474 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:55:36,475 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:55:36,475 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:55:40,547 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85847]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:55:43,647 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:55:43,668 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:55:43,669 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:55:43,743 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:55:43,743 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:55:43,973 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:55:43,976 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [85883]
+INFO:     Waiting for application startup.
+2025-07-04 07:55:45,169 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:55:45,169 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:55:45,169 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:56:41,983 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85883]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:56:43,818 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:56:43,839 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:56:43,840 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:56:43,911 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:56:43,912 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:56:44,133 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:56:44,137 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [85974]
+INFO:     Waiting for application startup.
+2025-07-04 07:56:45,357 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:56:45,357 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:56:45,357 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:56:47,808 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [85974]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:56:50,037 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:56:50,058 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:56:50,059 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:56:50,132 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:56:50,132 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:56:50,380 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:56:50,383 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86014]
+INFO:     Waiting for application startup.
+2025-07-04 07:56:51,613 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:56:51,613 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:56:51,613 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:56:54,471 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86014]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:56:56,371 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:56:56,392 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:56:56,393 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:56:56,463 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:56:56,463 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:56:56,701 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:56:56,705 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86029]
+INFO:     Waiting for application startup.
+2025-07-04 07:56:57,888 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:56:57,888 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:56:57,888 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:56:59,126 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86029]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:57:00,608 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:57:00,628 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:57:00,629 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:57:00,699 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:57:00,700 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:57:00,924 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:57:00,927 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86039]
+INFO:     Waiting for application startup.
+2025-07-04 07:57:02,141 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:57:02,141 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:57:02,141 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:57:05,302 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86039]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:57:07,662 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:57:07,683 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:57:07,684 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:57:07,759 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:57:07,760 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:57:07,999 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:57:08,003 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86052]
+INFO:     Waiting for application startup.
+2025-07-04 07:57:09,259 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:57:09,260 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:57:09,260 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:57:12,017 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86052]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:57:13,364 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:57:13,385 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:57:13,386 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:57:13,456 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:57:13,457 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:57:13,680 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:57:13,684 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86062]
+INFO:     Waiting for application startup.
+2025-07-04 07:57:14,923 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:57:14,923 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:57:14,924 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 07:57:17,685 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86062]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 07:57:19,018 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 07:57:19,039 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 07:57:19,040 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 07:57:19,110 - main - INFO - ✅ AI search router included successfully
+2025-07-04 07:57:19,111 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 07:57:19,330 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 07:57:19,334 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86081]
+INFO:     Waiting for application startup.
+2025-07-04 07:57:20,533 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 07:57:20,533 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 07:57:20,533 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia_simple.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:42:55,080 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86081]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'test_algolia_simple.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:42:57,382 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:42:57,403 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:42:57,404 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:42:57,478 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:42:57,479 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:42:57,735 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:42:57,739 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86667]
+INFO:     Waiting for application startup.
+2025-07-04 08:42:59,155 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:42:59,155 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:42:59,155 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia_simple.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:43:04,163 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86667]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:43:05,845 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:43:05,865 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:43:05,866 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:43:05,940 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:43:05,941 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:43:06,188 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:43:06,192 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86681]
+INFO:     Waiting for application startup.
+2025-07-04 08:43:07,474 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:43:07,475 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:43:07,475 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia_simple.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:44:39,237 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86681]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:44:41,534 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:44:41,555 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:44:41,556 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:44:41,628 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:44:41,629 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:44:41,855 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:44:41,859 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86819]
+INFO:     Waiting for application startup.
+2025-07-04 08:44:43,132 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:44:43,132 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:44:43,132 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'test_algolia_simple.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:44:47,417 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86819]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:44:49,120 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:44:49,141 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:44:49,142 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:44:49,215 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:44:49,215 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:44:49,436 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:44:49,440 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [86883]
+INFO:     Waiting for application startup.
+2025-07-04 08:44:51,481 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:44:51,481 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:44:51,481 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:45:24,802 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86883]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:45:26,365 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:45:26,385 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:45:26,386 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:45:26,459 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:45:26,460 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:45:26,686 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:45:26,690 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [87165]
+INFO:     Waiting for application startup.
+2025-07-04 08:45:27,867 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:45:27,867 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:45:27,867 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:45:30,012 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [87165]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:45:31,521 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:45:31,542 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:45:31,543 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:45:31,613 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:45:31,614 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:45:31,837 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:45:31,840 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [87181]
+INFO:     Waiting for application startup.
+2025-07-04 08:45:33,043 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:45:33,043 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:45:33,043 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:45:35,707 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [87181]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:45:37,246 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:45:37,267 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:45:37,268 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:45:37,339 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:45:37,339 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:45:37,563 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:45:37,567 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [87199]
+INFO:     Waiting for application startup.
+2025-07-04 08:45:38,709 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:45:38,709 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:45:38,709 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:50:49,184 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [87199]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:50:50,948 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:50:50,969 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:50:50,970 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:50:51,042 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:50:51,042 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:50:51,277 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:50:51,281 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [88814]
+INFO:     Waiting for application startup.
+2025-07-04 08:50:52,569 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:50:52,569 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:50:52,569 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:50:58,252 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [88814]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:50:59,743 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:50:59,764 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:50:59,765 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:50:59,836 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:50:59,836 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:51:00,077 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:51:00,132 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [88856]
+INFO:     Waiting for application startup.
+2025-07-04 08:51:01,359 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:51:01,359 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:51:01,359 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:51:04,125 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [88856]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:51:05,538 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:51:05,559 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:51:05,560 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:51:05,619 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:51:05,629 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:51:05,629 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:51:05,860 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:51:05,864 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [88883]
+INFO:     Waiting for application startup.
+2025-07-04 08:51:07,011 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:51:07,012 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:51:07,012 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:51:10,566 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [88883]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:51:12,146 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:51:12,167 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:51:12,168 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:51:12,230 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:51:12,240 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:51:12,240 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:51:12,474 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:51:12,477 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [88916]
+INFO:     Waiting for application startup.
+2025-07-04 08:51:13,642 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:51:13,642 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:51:13,642 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:23,248 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [88916]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:25,461 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:25,481 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:25,482 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:25,545 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:25,555 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:25,556 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:25,797 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:25,800 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90013]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:27,124 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:27,124 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:27,124 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:29,178 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90013]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:31,122 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:31,143 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:31,144 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:31,205 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:31,215 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:31,215 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:31,461 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:31,465 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90024]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:32,714 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:32,714 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:32,714 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:35,167 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90024]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:36,794 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:36,814 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:36,815 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:36,877 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:36,886 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:36,887 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:37,120 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:37,124 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90035]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:38,366 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:38,366 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:38,366 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:41,731 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90035]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:43,572 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:43,593 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:43,594 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:43,653 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:43,662 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:43,663 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:43,888 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:43,891 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90044]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:45,155 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:45,156 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:45,156 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:47,312 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90044]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:49,196 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:49,217 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:49,217 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:49,275 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:49,285 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:49,285 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:49,501 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:49,505 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90054]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:50,847 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:50,847 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:50,847 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:55:54,010 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90054]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:55:56,465 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:55:56,505 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:55:56,506 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:55:56,587 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:55:56,598 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:55:56,599 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:55:56,884 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:55:56,889 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90065]
+INFO:     Waiting for application startup.
+2025-07-04 08:55:58,133 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:55:58,133 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:55:58,133 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:56:00,885 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90065]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:56:02,508 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:56:02,529 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:56:02,530 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:56:02,592 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:56:02,602 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:56:02,603 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:56:02,833 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:56:02,837 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90077]
+INFO:     Waiting for application startup.
+2025-07-04 08:56:03,960 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:56:03,961 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:56:03,961 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:58:48,729 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90077]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:58:50,413 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:58:50,433 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:58:50,434 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:58:50,492 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:58:50,502 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:58:50,502 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:58:50,720 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:58:50,724 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90700]
+INFO:     Waiting for application startup.
+2025-07-04 08:58:51,941 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:58:51,941 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:58:51,941 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:58:56,406 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90700]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:58:58,404 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:58:58,425 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:58:58,426 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:58:58,490 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:58:58,500 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:58:58,500 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:58:58,735 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:58:58,739 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90721]
+INFO:     Waiting for application startup.
+2025-07-04 08:58:59,946 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:58:59,946 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:58:59,946 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 08:59:02,697 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90721]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 08:59:04,140 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 08:59:04,161 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 08:59:04,162 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 08:59:04,221 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 08:59:04,231 - main - INFO - ✅ AI search router included successfully
+2025-07-04 08:59:04,231 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 08:59:04,457 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 08:59:04,461 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90747]
+INFO:     Waiting for application startup.
+2025-07-04 08:59:05,694 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 08:59:05,694 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 08:59:05,694 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:00:08,751 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90747]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:00:10,661 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:00:10,683 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:00:10,684 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:00:10,744 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:00:10,754 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:00:10,755 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:00:10,987 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:00:10,990 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90865]
+INFO:     Waiting for application startup.
+2025-07-04 09:00:12,246 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:00:12,246 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:00:12,246 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:00:15,706 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90865]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:00:17,398 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:00:17,421 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:00:17,422 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:00:17,485 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:00:17,496 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:00:17,496 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:00:17,752 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:00:17,756 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [90902]
+INFO:     Waiting for application startup.
+2025-07-04 09:00:19,761 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:00:19,761 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:00:19,761 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:02:30,682 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [90902]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:02:32,353 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:02:32,373 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:02:32,374 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:02:32,438 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:02:32,448 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:02:32,449 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:02:32,704 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:02:32,708 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [91150]
+INFO:     Waiting for application startup.
+2025-07-04 09:02:33,981 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:02:33,981 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:02:33,981 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:02:39,367 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [91150]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:02:40,919 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:02:40,940 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:02:40,941 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:02:41,001 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:02:41,010 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:02:41,011 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:02:41,229 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:02:41,232 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [91196]
+INFO:     Waiting for application startup.
+2025-07-04 09:02:42,479 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:02:42,479 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:02:42,479 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:06:03,274 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [91196]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:06:05,090 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:06:05,111 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:06:05,112 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:06:05,174 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:06:05,185 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:06:05,185 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:06:05,420 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:06:05,424 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [91569]
+INFO:     Waiting for application startup.
+2025-07-04 09:06:06,588 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:06:06,588 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:06:06,588 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'services/algolia_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 09:06:10,147 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [91569]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+/Users/saleemjadallah/Desktop/DXB-events/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'allow_population_by_field_name' has been renamed to 'validate_by_name'
+  warnings.warn(message, UserWarning)
+2025-07-04 09:06:11,737 - main - INFO - ✅ AI search router imported successfully
+2025-07-04 09:06:11,758 - services.openai_service_optimized - INFO - ✅ Optimized OpenAI service initialized with model: gpt-4o-mini
+2025-07-04 09:06:11,759 - main - INFO - ✅ Optimized AI search router imported successfully
+2025-07-04 09:06:11,821 - main - INFO - ✅ Mounted static image storage at /images from ./storage/images
+2025-07-04 09:06:11,831 - main - INFO - ✅ AI search router included successfully
+2025-07-04 09:06:11,831 - main - INFO - ✅ Optimized AI search router included successfully
+2025-07-04 09:06:12,062 - services.algolia_service - WARNING - ⚠️ Algolia not configured - missing app_id or api_key
+2025-07-04 09:06:12,066 - main - INFO - ✅ Algolia search router included successfully
+INFO:     Started server process [91602]
+INFO:     Waiting for application startup.
+2025-07-04 09:06:13,280 - main - INFO - ✅ MongoDB Atlas database initialized successfully
+2025-07-04 09:06:13,281 - main - INFO - 🚀 DXB Events API v1.0.0 started successfully!
+2025-07-04 09:06:13,281 - main - INFO - 📋 MongoDB Atlas database: DXB
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2025-07-04 12:09:40,789 - main - INFO - ✅ All database connections closed
+INFO:     Application shutdown complete.
+INFO:     Finished server process [91602]
+✅ MongoDB Atlas connected successfully to database: DXB
+✅ MongoDB indexes created successfully (including lifecycle management and user auth)
+✅ Redis connected successfully
+⚠️ Elasticsearch connection failed (optional for development): 'NoneType' object has no attribute 'info'
+⚠️ Error closing connections: 'NoneType' object has no attribute 'close'
+INFO:     Stopping reloader process [9416]

@@ -1,0 +1,99 @@
+name: Configure Algolia Index
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'configure'
+        type: choice
+        options:
+          - configure
+          - reindex
+          - both
+
+jobs:
+  configure-algolia:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Configure Algolia Index via SSH
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: 3.91.25.117
+        username: ubuntu
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd /home/ubuntu/backend
+          source venv/bin/activate
+          
+          # Export environment variables
+          export ALGOLIA_APP_ID="${{ secrets.ALGOLIA_APP_ID }}"
+          export ALGOLIA_API_KEY="${{ secrets.ALGOLIA_API_KEY }}"
+          export ALGOLIA_INDEX_NAME="${{ secrets.ALGOLIA_INDEX_NAME }}"
+          export MONGODB_URI="${{ secrets.MONGODB_URI }}"
+          
+          if [ "${{ github.event.inputs.action }}" == "configure" ] || [ "${{ github.event.inputs.action }}" == "both" ]; then
+            echo "🔧 Configuring Algolia index settings and facets..."
+            python3 setup_algolia.py || echo "Failed to run setup_algolia.py"
+          fi
+          
+          if [ "${{ github.event.inputs.action }}" == "reindex" ] || [ "${{ github.event.inputs.action }}" == "both" ]; then
+            echo "🔄 Re-indexing all events to Algolia..."
+            # Create a simple reindex script if it doesn't exist
+            cat > reindex_algolia.py << 'EOF'
+import asyncio
+import os
+from services.algolia_service import algolia_service
+from database import init_databases, get_mongodb
+
+async def reindex():
+    print("🔄 Re-indexing all events to Algolia...")
+    
+    if not algolia_service.enabled:
+        print("❌ Algolia not enabled")
+        return False
+        
+    await init_databases()
+    db = await get_mongodb()
+    
+    # Clear existing index
+    print("🗑️  Clearing existing index...")
+    try:
+        await algolia_service.client.clear_objects(index_name=algolia_service.index_name)
+    except:
+        pass
+    
+    # Configure settings first
+    print("⚙️  Configuring index settings...")
+    await algolia_service.configure_index_settings()
+    
+    # Get all events
+    print("📊 Fetching all events...")
+    events_cursor = db.events.find({})
+    events = await events_cursor.to_list(length=None)
+    print(f"   Found {len(events)} events")
+    
+    # Index in batches
+    batch_size = 100
+    total = 0
+    
+    for i in range(0, len(events), batch_size):
+        batch = events[i:i + batch_size]
+        success = await algolia_service.index_events(batch)
+        if success:
+            total += len(batch)
+            print(f"   Indexed {total}/{len(events)} events...")
+    
+    print(f"✅ Re-indexed {total} events successfully!")
+    return True
+
+if __name__ == "__main__":
+    asyncio.run(reindex())
+EOF
+            
+            python3 reindex_algolia.py || echo "Failed to reindex"
+          fi
+          
+          echo "✅ Algolia configuration complete!"

@@ -8,7 +8,7 @@ import os
 import sys
 import asyncio
 from services.algolia_service import algolia_service
-from database import init_databases, get_mongodb_connection
+from database import init_databases, get_mongodb
 
 async def setup_algolia():
     """
@@ -48,7 +48,7 @@ async def setup_algolia():
     print("\n📊 Connecting to MongoDB...")
     try:
         await init_databases()
-        db = get_mongodb_connection()
+        db = await get_mongodb()
         print("✅ MongoDB connected")
     except Exception as e:
         print(f"❌ Failed to connect to MongoDB: {e}")

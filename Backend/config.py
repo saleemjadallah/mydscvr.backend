@@ -65,6 +65,11 @@ class Settings(BaseSettings):
     webhook_api_key: str = os.getenv("WEBHOOK_API_KEY", "dev-key")
     perplexity_api_key: Optional[str] = os.getenv("PERPLEXITY_API_KEY")
     
+    # Image Service Configuration
+    image_storage_path: str = os.getenv("IMAGE_STORAGE_PATH", "./storage/images")
+    cdn_base_url: Optional[str] = os.getenv("CDN_BASE_URL", "https://mydscvr.xyz")
+    aws_s3_bucket: Optional[str] = os.getenv("AWS_S3_BUCKET")
+    
     # Google OAuth Configuration
     google_client_id: str = os.getenv("GOOGLE_CLIENT_ID", "CHANGE-THIS-IN-PRODUCTION")
     google_client_secret: str = os.getenv("GOOGLE_CLIENT_SECRET", "CHANGE-THIS-IN-PRODUCTION")
