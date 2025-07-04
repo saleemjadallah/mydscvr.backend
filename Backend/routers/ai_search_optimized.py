@@ -12,6 +12,8 @@ import traceback
 from database import get_mongodb
 from services.openai_service_optimized import optimized_openai_service
 from routers.search import _convert_event_to_response, _get_filter_options
+from utils.temporal_parser import temporal_parser
+from utils.date_utils import filter_events_by_day_type, calculate_date_range
 
 router = APIRouter(prefix="/api/ai-search-v2", tags=["ai-search-v2"])
 logger = logging.getLogger(__name__)
@@ -68,178 +70,61 @@ async def optimized_ai_search(
         if text_conditions:
             must_conditions.extend(text_conditions)
         
-        # Advanced temporal query detection
-        query_lower = q.lower()
-        now = datetime.now()
+        # Enhanced temporal query detection using our intelligent date system
+        temporal_analysis = temporal_parser.parse_temporal_expression(q)
+        temporal_conditions = None
+        use_post_filter = False
         
-        # Today and tonight
-        if any(word in query_lower for word in ["today", "tonight"]):
-            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
-            if "tonight" in query_lower:
-                # Tonight = after 6 PM today
-                today_start = now.replace(hour=18, minute=0, second=0, microsecond=0)
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": today_start, "$lte": today_end}},
-                    {"end_date": {"$gte": today_start, "$lte": today_end}},
-                    {"$and": [
-                        {"start_date": {"$lte": today_start}},
-                        {"end_date": {"$gte": today_end}}
-                    ]}
-                ]
-            }
+        logger.info(f"Temporal analysis: {temporal_analysis}")
+        
+        # Use our intelligent date system for temporal filtering
+        if temporal_analysis['date_filter']:
+            date_filter_type = temporal_analysis['date_filter']
             
-        # Tomorrow
-        elif "tomorrow" in query_lower:
-            tomorrow_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-            tomorrow_end = tomorrow_start.replace(hour=23, minute=59, second=59, microsecond=999999)
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": tomorrow_start, "$lte": tomorrow_end}},
-                    {"end_date": {"$gte": tomorrow_start, "$lte": tomorrow_end}},
-                    {"$and": [
-                        {"start_date": {"$lte": tomorrow_start}},
-                        {"end_date": {"$gte": tomorrow_end}}
-                    ]}
-                ]
-            }
-            
-        # This morning/afternoon
-        elif "this morning" in query_lower:
-            morning_start = now.replace(hour=6, minute=0, second=0, microsecond=0)
-            morning_end = now.replace(hour=12, minute=0, second=0, microsecond=0)
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": morning_start, "$lte": morning_end}},
-                    {"end_date": {"$gte": morning_start, "$lte": morning_end}},
-                    {"$and": [
-                        {"start_date": {"$lte": morning_start}},
-                        {"end_date": {"$gte": morning_end}}
-                    ]}
-                ]
-            }
-        elif "this afternoon" in query_lower:
-            afternoon_start = now.replace(hour=12, minute=0, second=0, microsecond=0)
-            afternoon_end = now.replace(hour=18, minute=0, second=0, microsecond=0)
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": afternoon_start, "$lte": afternoon_end}},
-                    {"end_date": {"$gte": afternoon_start, "$lte": afternoon_end}},
-                    {"$and": [
-                        {"start_date": {"$lte": afternoon_start}},
-                        {"end_date": {"$gte": afternoon_end}}
-                    ]}
-                ]
-            }
-            
-        # This weekend (current or upcoming) - Check BEFORE "this week" to avoid substring match
-        elif any(phrase in query_lower for phrase in ["this weekend", "weekend"]):
-            if now.weekday() >= 5:  # If today is Saturday or Sunday
-                # Current weekend
-                if now.weekday() == 5:  # Saturday
-                    weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-                else:  # Sunday
-                    weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
-                weekend_end = weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
+            if date_filter_type in ['weekdays', 'weekends']:
+                # These require post-processing after MongoDB query
+                use_post_filter = True
+                logger.info(f"AI Search: Will apply post-filter for {date_filter_type}")
+            elif date_filter_type in ['this_weekend', 'next_weekend']:
+                # For specific weekend queries, apply date range filter
+                try:
+                    start_date, end_date = calculate_date_range(date_filter_type)
+                    temporal_conditions = {
+                        "$or": [
+                            {"start_date": {"$gte": start_date, "$lte": end_date}},
+                            {"end_date": {"$gte": start_date, "$lte": end_date}},
+                            {"$and": [
+                                {"start_date": {"$lte": start_date}},
+                                {"end_date": {"$gte": end_date}}
+                            ]}
+                        ]
+                    }
+                    logger.info(f"AI Search: Applied smart date filter for {date_filter_type} ({start_date} to {end_date})")
+                except Exception as e:
+                    logger.warning(f"Failed to calculate date range for {date_filter_type}: {e}")
             else:
-                # Upcoming weekend
-                days_until_saturday = (5 - now.weekday()) % 7
-                if days_until_saturday == 0:
-                    days_until_saturday = 7
-                weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=days_until_saturday)
-                weekend_end = weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
-            
-            logger.info(f"Weekend detection: {weekend_start} to {weekend_end}")
-            temporal_conditions = {
-                "$or": [
-                    # Events that start during the weekend
-                    {"start_date": {"$gte": weekend_start, "$lte": weekend_end}},
-                    # Events that end during the weekend  
-                    {"end_date": {"$gte": weekend_start, "$lte": weekend_end}},
-                    # Events that span the entire weekend (start before, end after)
-                    {"$and": [
-                        {"start_date": {"$lte": weekend_start}},
-                        {"end_date": {"$gte": weekend_end}}
-                    ]}
-                ]
-            }
-            
-        # This week
-        elif any(phrase in query_lower for phrase in ["this week", "events this week"]):
-            days_since_monday = now.weekday()  # Monday = 0, Sunday = 6
-            monday = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday)
-            sunday = monday + timedelta(days=6, hours=23, minutes=59, seconds=59, microseconds=999999)
-            
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": monday, "$lte": sunday}},
-                    {"end_date": {"$gte": monday, "$lte": sunday}},
-                    {"$and": [
-                        {"start_date": {"$lte": monday}},
-                        {"end_date": {"$gte": sunday}}
-                    ]}
-                ]
-            }
-            
-        # Next week
-        elif any(phrase in query_lower for phrase in ["next week", "events next week"]):
-            days_since_monday = now.weekday()
-            next_monday = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday) + timedelta(days=7)
-            next_sunday = next_monday + timedelta(days=6, hours=23, minutes=59, seconds=59, microseconds=999999)
-            
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": next_monday, "$lte": next_sunday}},
-                    {"end_date": {"$gte": next_monday, "$lte": next_sunday}},
-                    {"$and": [
-                        {"start_date": {"$lte": next_monday}},
-                        {"end_date": {"$gte": next_sunday}}
-                    ]}
-                ]
-            }
-            
-        # Next weekend
-        elif "next weekend" in query_lower:
-            days_until_saturday = (5 - now.weekday()) % 7
-            if days_until_saturday == 0:
-                days_until_saturday = 7
-            next_weekend_start = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=days_until_saturday + 7)
-            next_weekend_end = next_weekend_start + timedelta(days=1, hours=23, minutes=59, seconds=59, microseconds=999999)
-            
-            temporal_conditions = {
-                "$or": [
-                    {"start_date": {"$gte": next_weekend_start, "$lte": next_weekend_end}},
-                    {"end_date": {"$gte": next_weekend_start, "$lte": next_weekend_end}},
-                    {"$and": [
-                        {"start_date": {"$lte": next_weekend_start}},
-                        {"end_date": {"$gte": next_weekend_end}}
-                    ]}
-                ]
-            }
-            
-        # This month
-        elif any(phrase in query_lower for phrase in ["this month", "events this month"]):
-            month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            # Get last day of current month
-            if now.month == 12:
-                month_end = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
-            else:
-                month_end = now.replace(month=now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
-            temporal_conditions = {"start_date": {"$gte": month_start, "$lte": month_end}}
-            
-        # Next month
-        elif any(phrase in query_lower for phrase in ["next month", "events next month"]):
-            if now.month == 12:
-                next_month_start = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-                next_month_end = now.replace(year=now.year + 1, month=2, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
-            else:
-                next_month_start = now.replace(month=now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0)
-                if now.month == 11:
-                    next_month_end = now.replace(year=now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
-                else:
-                    next_month_end = now.replace(month=now.month + 2, day=1, hour=0, minute=0, second=0, microsecond=0) - timedelta(microseconds=1)
-            temporal_conditions = {"start_date": {"$gte": next_month_start, "$lte": next_month_end}}
+                # Apply smart date range filter using our date_utils
+                try:
+                    start_date, end_date = calculate_date_range(date_filter_type)
+                    temporal_conditions = {
+                        "$or": [
+                            {"start_date": {"$gte": start_date, "$lte": end_date}},
+                            {"end_date": {"$gte": start_date, "$lte": end_date}},
+                            {"$and": [
+                                {"start_date": {"$lte": start_date}},
+                                {"end_date": {"$gte": end_date}}
+                            ]}
+                        ]
+                    }
+                    logger.info(f"AI Search: Applied smart date filter for {date_filter_type} ({start_date} to {end_date})")
+                except Exception as e:
+                    logger.warning(f"Failed to calculate date range for {date_filter_type}: {e}")
+                    
+        # Handle family-friendly detection from temporal parser
+        family_friendly_detected = temporal_analysis.get('family_friendly', False)
+        
+        # Define query_lower for use throughout the function
+        query_lower = q.lower()
         
         # Price detection and filtering
         if any(word in query_lower for word in ["free", "free events"]):
@@ -311,8 +196,9 @@ async def optimized_ai_search(
                 })
                 break
                 
-        # Family and age detection - CRITICAL for "kids" queries
-        if any(word in query_lower for word in ["kids", "kid", "children", "child"]):
+        # Enhanced family and age detection using temporal parser + existing logic
+        # Check both temporal parser results and query content
+        if family_friendly_detected or any(word in query_lower for word in ["kids", "kid", "children", "child"]):
             # Strong filter for kid-friendly events
             must_conditions.append({
                 "$or": [
@@ -333,6 +219,7 @@ async def optimized_ai_search(
                     {"primary_category": "nightlife"}
                 ]
             })
+            logger.info("Applied enhanced family-friendly filtering")
         elif any(word in query_lower for word in ["family", "family-friendly", "family events"]):
             must_conditions.append({
                 "$or": [
@@ -348,6 +235,22 @@ async def optimized_ai_search(
                     {"age_restrictions": {"$regex": "18\\+", "$options": "i"}}
                 ]
             })
+            
+        # Handle location preferences from temporal parser
+        temporal_locations = temporal_analysis.get('location_preferences', [])
+        if temporal_locations:
+            location_conditions = []
+            for location in temporal_locations:
+                location_conditions.append({
+                    "$or": [
+                        {"venue.area": {"$regex": location, "$options": "i"}},
+                        {"location": {"$regex": location, "$options": "i"}},
+                        {"address": {"$regex": location, "$options": "i"}}
+                    ]
+                })
+            if location_conditions:
+                must_conditions.extend(location_conditions)
+                logger.info(f"Applied location filters: {temporal_locations}")
             
         # Indoor/outdoor detection
         if any(word in query_lower for word in ["outdoor", "outdoor activities"]):
@@ -413,12 +316,20 @@ async def optimized_ai_search(
             "source_name": 1
         }
         
-        # Get 100 events max to prevent token overflow, but only send necessary fields
+        # Get events - adjust limit for post-filtering if needed
+        max_limit = 150 if use_post_filter else 100  # Get more events for weekday/weekend filtering
         logger.info(f"MongoDB query: {filter_query}")
-        events_cursor = db.events.find(filter_query, projection).sort("start_date", 1).limit(100)
-        events = await events_cursor.to_list(length=100)
+        events_cursor = db.events.find(filter_query, projection).sort("start_date", 1).limit(max_limit)
+        all_events = await events_cursor.to_list(length=max_limit)
         
-        logger.info(f"Optimized AI Search: Found {len(events)} initial events")
+        # Apply post-filtering for weekdays/weekends if needed
+        if use_post_filter and temporal_analysis['date_filter'] in ['weekdays', 'weekends']:
+            events = filter_events_by_day_type(all_events, temporal_analysis['date_filter'])
+            logger.info(f"AI Search: Post-filtered from {len(all_events)} to {len(events)} events for {temporal_analysis['date_filter']}")
+        else:
+            events = all_events
+        
+        logger.info(f"Optimized AI Search: Found {len(events)} final events")
         
         if not events:
             # Quick fallback search with proper date filtering and variety
@@ -529,6 +440,38 @@ async def optimized_ai_status():
         "ai_enabled": optimized_openai_service.enabled,
         "model": optimized_openai_service.model if optimized_openai_service.enabled else None,
         "status": "ready" if optimized_openai_service.enabled else "disabled",
-        "version": "v2_optimized",
-        "expected_response_time": "< 5 seconds"
+        "version": "v2_optimized_with_temporal",
+        "expected_response_time": "< 5 seconds",
+        "temporal_parsing_enabled": True,
+        "dubai_timezone_aware": True,
+        "weekend_schedule": "Saturday-Sunday",
+        "supported_queries": [
+            "events this weekend",
+            "kids activities next week", 
+            "concerts this coming Saturday",
+            "family events weekdays",
+            "shows tomorrow in marina",
+            "free events this month"
+        ]
+    }
+
+@router.get("/temporal-demo")
+async def temporal_parsing_demo(
+    query: str = Query(..., description="Test query for temporal parsing demonstration")
+):
+    """
+    Demo endpoint to test temporal parsing capabilities
+    """
+    temporal_result = temporal_parser.parse_temporal_expression(query)
+    
+    return {
+        "original_query": query,
+        "temporal_analysis": temporal_result,
+        "enhancements": {
+            "date_filter_detected": temporal_result.get('date_filter') is not None,
+            "family_friendly_detected": temporal_result.get('family_friendly') is not None,
+            "location_detected": len(temporal_result.get('location_preferences', [])) > 0,
+            "confidence_score": temporal_result.get('confidence', 0)
+        },
+        "example_queries": temporal_parser.get_example_queries()
     }
