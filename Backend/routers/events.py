@@ -13,6 +13,10 @@ from database import get_mongodb
 from schemas import (
     EventResponse, EventListResponse
 )
+from utils.date_utils import (
+    calculate_date_range, get_events_date_filter_query, filter_events_by_day_type,
+    get_available_date_filters, is_weekday, is_weekend_day, get_dubai_now
+)
 from utils.deduplication import EventDeduplicator
 # from utils.rate_limiting import search_rate_limit  # Optional
 # from routers.auth import get_current_user  # Removed PostgreSQL auth
@@ -81,6 +85,7 @@ async def get_events(
     area: Optional[str] = Query(None, description="Dubai area (Marina, JBR, etc.)"),
     date_from: Optional[datetime] = Query(None, description="Events from this date"),
     date_to: Optional[datetime] = Query(None, description="Events until this date"),
+    date_filter: Optional[str] = Query(None, description="Smart date filter: today, tomorrow, this_week, next_week, this_weekend, next_weekend, this_month, next_month, weekdays, weekends"),
     price_max: Optional[float] = Query(None, description="Maximum price in AED"),
     price_min: Optional[float] = Query(None, description="Minimum price in AED"),
     age_group: Optional[str] = Query(None, description="Age group (child, teen, adult, family)"),
@@ -107,8 +112,19 @@ async def get_events(
     # Filter by end_date >= current_time to include ongoing events
     filter_query["end_date"] = {"$gte": current_time}
     
-    # Additional date filtering from parameters for start_date
-    if date_from or date_to:
+    # Smart date filtering - takes precedence over manual date_from/date_to
+    use_post_filter = False
+    if date_filter:
+        if date_filter in ['weekdays', 'weekends']:
+            # These require post-processing after MongoDB query
+            use_post_filter = True
+        else:
+            # Apply smart date range filter
+            smart_date_query = get_events_date_filter_query(date_filter)
+            if smart_date_query:
+                filter_query.update(smart_date_query)
+    elif date_from or date_to:
+        # Fallback to manual date filtering if no smart filter
         start_date_filter = {}
         if date_from:
             start_date_filter["$gte"] = date_from
@@ -175,12 +191,28 @@ async def get_events(
     # Calculate pagination
     skip = (page - 1) * per_page
     
-    # Execute queries
-    events_cursor = db.events.find(filter_query).sort(sort_query).skip(skip).limit(per_page)
-    events = await events_cursor.to_list(length=per_page)
-    
-    # Get total count for pagination
-    total = await db.events.count_documents(filter_query)
+    # Execute queries with special handling for weekday/weekend filters
+    if use_post_filter and date_filter in ['weekdays', 'weekends']:
+        # For weekday/weekend filtering, we need to get more events and filter post-query
+        # Get extra events to account for filtering
+        extra_limit = per_page * 3  # Get 3x more events to ensure we have enough after filtering
+        events_cursor = db.events.find(filter_query).sort(sort_query).limit(extra_limit)
+        all_events = await events_cursor.to_list(length=extra_limit)
+        
+        # Apply weekday/weekend filtering
+        filtered_events = filter_events_by_day_type(all_events, date_filter)
+        
+        # Apply pagination to filtered results
+        total_filtered = len(filtered_events)
+        events = filtered_events[skip:skip + per_page]
+        total = total_filtered
+    else:
+        # Normal query with pagination
+        events_cursor = db.events.find(filter_query).sort(sort_query).skip(skip).limit(per_page)
+        events = await events_cursor.to_list(length=per_page)
+        
+        # Get total count for pagination
+        total = await db.events.count_documents(filter_query)
     
     # Convert to response format
     event_responses = []
@@ -206,6 +238,20 @@ async def get_events(
         },
         filters=filter_options
     )
+
+
+@router.get("/filters/date-options")
+async def get_date_filter_options():
+    """
+    Get available smart date filter options for the frontend
+    """
+    return {
+        "date_filters": get_available_date_filters(),
+        "current_time": {
+            "dubai": get_dubai_now().isoformat(),
+            "utc": datetime.utcnow().isoformat()
+        }
+    }
 
 
 @router.get("/{event_id}", response_model=EventResponse)
@@ -263,15 +309,24 @@ async def get_saved_events(
 async def get_trending_events(
     limit: int = Query(10, ge=1, le=50),
     area: Optional[str] = Query(None),
+    extraction_method: Optional[str] = Query(None, description="Filter by extraction method (e.g., 'firecrawl', 'perplexity', 'api')"),
+    firecrawl_only: bool = Query(False, description="Show only firecrawl-extracted events"),
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """
     Get trending events based on view count and save count
+    Supports filtering by extraction method or firecrawl-only events
     """
     filter_query = {"status": "active", "end_date": {"$gte": datetime.utcnow()}}
     
     if area:
         filter_query["venue.area"] = {"$regex": area, "$options": "i"}
+    
+    # Filter by extraction method
+    if firecrawl_only:
+        filter_query["extraction_method"] = "firecrawl"
+    elif extraction_method:
+        filter_query["extraction_method"] = extraction_method
     
     # Sort by trending score (view_count + save_count * 2)
     pipeline = [
@@ -284,6 +339,65 @@ async def get_trending_events(
     ]
     
     events = await db.events.aggregate(pipeline).to_list(length=limit)
+    
+    event_responses = []
+    for event in events:
+        event_responses.append(await _convert_event_to_response(event))
+    
+    return EventListResponse(
+        events=event_responses,
+        total=len(events),
+        page=1,
+        per_page=limit,
+        total_pages=1,
+        pagination={"page": 1, "per_page": limit, "total": len(events), "total_pages": 1, "has_next": False, "has_prev": False},
+        filters=await _get_filter_options(db)
+    )
+
+
+@router.get("/firecrawl/list", response_model=EventListResponse)
+async def get_firecrawl_events(
+    limit: int = Query(20, ge=1, le=100),
+    area: Optional[str] = Query(None),
+    sort_by: str = Query("trending_score", description="Sort by: trending_score, start_date, rating"),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Get events specifically extracted via Firecrawl
+    These are high-quality events scraped from verified sources
+    """
+    filter_query = {
+        "status": "active", 
+        "end_date": {"$gte": datetime.utcnow()},
+        "extraction_method": "firecrawl"
+    }
+    
+    if area:
+        filter_query["venue.area"] = {"$regex": area, "$options": "i"}
+    
+    # Build sort criteria
+    sort_criteria = {}
+    if sort_by == "trending_score":
+        # Use aggregation pipeline for trending score calculation
+        pipeline = [
+            {"$match": filter_query},
+            {"$addFields": {
+                "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
+            }},
+            {"$sort": {"trending_score": -1}},
+            {"$limit": limit}
+        ]
+        events = await db.events.aggregate(pipeline).to_list(length=limit)
+    else:
+        # Simple sort for other criteria
+        if sort_by == "start_date":
+            sort_criteria["start_date"] = 1
+        elif sort_by == "rating":
+            sort_criteria["rating"] = -1
+        else:
+            sort_criteria["start_date"] = 1  # Default fallback
+        
+        events = await db.events.find(filter_query).sort(sort_criteria).limit(limit).to_list(length=limit)
     
     event_responses = []
     for event in events:

@@ -252,6 +252,15 @@ if ai_search_optimized is not None:
 else:
     logger.warning("⚠️ Optimized AI search router not available")
 
+# Import Algolia search router with error handling
+try:
+    from routers import algolia_search  # High-performance Algolia search
+    app.include_router(algolia_search.router)
+    logger.info("✅ Algolia search router included successfully")
+except Exception as e:
+    logger.error(f"❌ Failed to import Algolia search router: {e}")
+    logger.warning("⚠️ Algolia search router not available")
+
 # MongoDB-based notifications router
 from routers import notifications_mongodb
 app.include_router(notifications_mongodb.router)

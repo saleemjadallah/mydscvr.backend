@@ -106,6 +106,8 @@ class EventModel(BaseModel):
     # Lifecycle Management Fields
     source: Optional[str] = Field(None, description="Event source identifier")
     source_priority: Optional[str] = Field(None, description="Source priority: high, medium, low")
+    extraction_method: Optional[str] = Field(None, description="Method used to extract event data: firecrawl, perplexity, manual, api, scraper, unknown")
+    extraction_method_updated_at: Optional[datetime] = Field(None, description="When extraction_method was last updated")
     retention_days: Optional[int] = Field(None, description="Days to retain after event end")
     delete_after: Optional[datetime] = Field(None, description="Automatic deletion date")
     scraped_at: Optional[datetime] = Field(None, description="When event was scraped")

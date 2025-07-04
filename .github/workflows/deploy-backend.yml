@@ -45,9 +45,11 @@ jobs:
           # Move Backend subdirectory contents up if they exist (for transition)
           if [ -d "Backend" ]; then
             echo "Moving Backend directory contents up one level..."
-            mv Backend/* . 2>/dev/null || true
-            mv Backend/.* . 2>/dev/null || true
-            rmdir Backend 2>/dev/null || true
+            # Use rsync for more reliable file moving, including hidden files
+            rsync -av Backend/ . --exclude='.git' || true
+            # Remove Backend directory after successful move
+            rm -rf Backend/ 2>/dev/null || true
+            echo "Backend directory contents moved successfully"
           fi
           
           # Create Backend.env file with secrets

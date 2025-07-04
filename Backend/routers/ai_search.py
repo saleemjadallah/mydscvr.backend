@@ -12,6 +12,8 @@ import traceback
 from database import get_mongodb
 from services.openai_service import openai_service, QueryAnalysis
 from routers.search import _convert_event_to_response, _get_filter_options
+from utils.temporal_parser import temporal_parser
+from utils.date_utils import filter_events_by_day_type
 
 router = APIRouter(prefix="/api/ai-search", tags=["ai-search"])
 logger = logging.getLogger(__name__)
@@ -31,18 +33,40 @@ async def ai_powered_search(
         
         # Step 1: Use OpenAI to analyze the query
         logger.info(f"AI Search: Analyzing query '{q}'")
-        analysis = await openai_service.analyze_query(q)
+        ai_analysis = await openai_service.analyze_query(q)
+        
+        # Step 1.5: Enhance with temporal parsing for natural language dates
+        logger.info(f"AI Search: Enhancing with temporal parsing")
+        enhanced_analysis_dict = temporal_parser.enhance_query_analysis(q, ai_analysis.model_dump())
+        analysis = QueryAnalysis(**enhanced_analysis_dict)
+        
+        logger.info(f"AI Search: Enhanced analysis - date_filter: {enhanced_analysis_dict.get('date_filter')}, family_friendly: {analysis.family_friendly}")
         
         if not openai_service.enabled:
             logger.warning("OpenAI service disabled, falling back to basic search")
             # Fallback to regular search endpoint logic would go here
             return await _fallback_search(q, page, per_page, db)
         
-        # Step 2: Build MongoDB query based on AI analysis
+        # Step 2: Build MongoDB query based on enhanced analysis
         filter_query = {"status": "active"}
         
-        # Apply time-based filtering if detected
-        if analysis.date_from or analysis.date_to:
+        # Apply smart time-based filtering using our date system
+        use_post_filter = False
+        date_filter_type = enhanced_analysis_dict.get('date_filter')
+        
+        if date_filter_type:
+            if date_filter_type in ['weekdays', 'weekends']:
+                # These require post-processing after MongoDB query
+                use_post_filter = True
+                logger.info(f"AI Search: Will apply post-filter for {date_filter_type}")
+            else:
+                # Apply smart date range filter using our date_utils
+                smart_date_query = temporal_parser.get_smart_date_query(date_filter_type)
+                if smart_date_query:
+                    filter_query.update(smart_date_query)
+                    logger.info(f"AI Search: Applied smart date filter for {date_filter_type}")
+        elif analysis.date_from or analysis.date_to:
+            # Fallback to manual date filtering
             date_filter = {}
             if analysis.date_from:
                 try:
@@ -88,15 +112,26 @@ async def ai_powered_search(
             location_patterns = "|".join(analysis.location_preferences)
             filter_query["venue.area"] = {"$regex": f".*({location_patterns}).*", "$options": "i"}
         
-        # Step 3: Fetch events from database
+        # Step 3: Fetch events from database with smart filtering
         skip = (page - 1) * per_page
         
-        # Get optimized pool for AI ranking - reduced for performance
-        max_events_for_ai = min(30, per_page * 2)  # Get 2x requested amount for faster processing
+        # Get optimized pool for AI ranking - adjust for post-filtering
+        if use_post_filter:
+            # Get more events for weekday/weekend filtering
+            max_events_for_ai = min(60, per_page * 4)  # Get more events to account for filtering
+        else:
+            max_events_for_ai = min(30, per_page * 2)  # Get 2x requested amount for faster processing
         
         # Sort by start_date to get more relevant events first
         events_cursor = db.events.find(filter_query).sort("start_date", 1).limit(max_events_for_ai)
-        events = await events_cursor.to_list(length=max_events_for_ai)
+        all_events = await events_cursor.to_list(length=max_events_for_ai)
+        
+        # Apply post-filtering for weekdays/weekends if needed
+        if use_post_filter and date_filter_type in ['weekdays', 'weekends']:
+            events = filter_events_by_day_type(all_events, date_filter_type)
+            logger.info(f"AI Search: Post-filtered from {len(all_events)} to {len(events)} events for {date_filter_type}")
+        else:
+            events = all_events
         
         logger.info(f"AI Search: Found {len(events)} events matching filters")
         

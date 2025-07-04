@@ -1,0 +1,40 @@
+2025-07-03 11:13:06 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:13:06 | INFO     | ============================================================
+2025-07-03 11:13:06 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:13:06 | INFO     | 📊 Analyzing existing events...
+2025-07-03 11:13:06 | INFO     | 🔌 Database connection closed
+2025-07-03 11:13:20 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:13:20 | INFO     | ============================================================
+2025-07-03 11:13:20 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:13:20 | INFO     | 🔍 Previewing migration changes...
+2025-07-03 11:13:21 | INFO     | 🔌 Database connection closed
+2025-07-03 11:14:59 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:14:59 | INFO     | ============================================================
+2025-07-03 11:14:59 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:14:59 | INFO     | 🧪 Running migration in DRY RUN mode
+2025-07-03 11:14:59 | INFO     | 🚀 Executing migration...
+2025-07-03 11:14:59 | INFO     | ⚠️ DRY RUN MODE - No changes will be made
+2025-07-03 11:15:00 | INFO     | 📝 Found 1689 events to migrate
+2025-07-03 11:15:00 | INFO     | 🔌 Database connection closed
+2025-07-03 11:40:04 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:40:04 | INFO     | ============================================================
+2025-07-03 11:40:04 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:40:04 | INFO     | 📊 Analyzing existing events...
+2025-07-03 11:40:04 | INFO     | 🔌 Database connection closed
+2025-07-03 11:40:19 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:40:19 | INFO     | ============================================================
+2025-07-03 11:40:19 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:40:19 | INFO     | ⚡ Running migration in EXECUTE mode
+2025-07-03 11:40:19 | ERROR    | ❌ Migration failed: EOF when reading a line
+2025-07-03 11:40:31 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 11:40:31 | INFO     | ============================================================
+2025-07-03 11:40:31 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 11:40:31 | INFO     | ⚡ Running migration in EXECUTE mode
+2025-07-03 11:40:31 | INFO     | 🚀 Executing migration...
+2025-07-03 11:40:32 | INFO     | 📝 Found 1689 events to migrate
+2025-07-03 11:41:10 | INFO     | 🔌 Database connection closed
+2025-07-03 13:35:22 | INFO     | 🗄️ MongoDB Migration: Add extraction_method field
+2025-07-03 13:35:22 | INFO     | ============================================================
+2025-07-03 13:35:23 | INFO     | ✅ Connected to MongoDB: DXB
+2025-07-03 13:35:23 | INFO     | ✅ Verifying migration results...
+2025-07-03 13:35:23 | INFO     | 🔌 Database connection closed
