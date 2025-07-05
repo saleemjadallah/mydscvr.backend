@@ -63,6 +63,10 @@ jobs:
           WEBHOOK_API_KEY=${{ secrets.WEBHOOK_API_KEY }}
           ZEPTO_API_KEY=${{ secrets.ZEPTO_API_KEY }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_API_KEY=${{ secrets.ALGOLIA_API_KEY }}
+          ALGOLIA_SEARCH_API_KEY=${{ secrets.ALGOLIA_SEARCH_API_KEY }}
+          ALGOLIA_INDEX_NAME=dxb_events
           OPENAI_MODEL=gpt-4o-mini
           OPENAI_MAX_TOKENS=1000
           OPENAI_TEMPERATURE=0.3

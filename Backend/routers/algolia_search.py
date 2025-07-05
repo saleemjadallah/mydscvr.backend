@@ -11,11 +11,11 @@ from datetime import datetime, timedelta
 import traceback
 
 from database import get_mongodb
-from services.algolia_service import algolia_service
+from services.algolia_service_v4 import algolia_service
 from routers.search import _convert_event_to_response, _get_filter_options
 from utils.date_utils import calculate_date_range
 
-router = APIRouter(prefix="/algolia-search", tags=["algolia-search"])
+router = APIRouter(prefix="/api/algolia-search", tags=["algolia-search"])
 logger = logging.getLogger(__name__)
 
 @router.get("")
