@@ -187,11 +187,20 @@ class AlgoliaService:
             index = self.client.init_index(self.index_name)
             result = await asyncio.to_thread(index.search, enhanced_query, search_params)
             
-            # Transform results
+            # Transform results and ensure consistent ID fields
             events = []
             for hit in result.get('hits', []):
                 event = dict(hit)
-                event['_id'] = event.get('objectID', '')
+                object_id = event.get('objectID', '')
+                
+                # Ensure all ID fields are consistent
+                event['_id'] = object_id
+                event['id'] = object_id  # Frontend might expect this field
+                
+                # Remove Algolia-specific fields that might cause confusion
+                event.pop('_highlightResult', None)
+                event.pop('_snippetResult', None)
+                
                 events.append(event)
             
             return {
