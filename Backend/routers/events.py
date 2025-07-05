@@ -506,6 +506,87 @@ async def get_featured_events(
     )
 
 
+@router.get("/mydscvr-choice", response_model=EventResponse)
+async def get_mydscvr_choice(
+    area: Optional[str] = Query(None),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Get MyDscvr's daily curated choice event with maximum priority for firecrawl events
+    """
+    filter_query = {
+        "status": "active",
+        "end_date": {"$gte": datetime.utcnow()}
+    }
+    
+    if area:
+        filter_query["venue.area"] = {"$regex": area, "$options": "i"}
+    
+    # Enhanced scoring pipeline with maximum firecrawl priority
+    pipeline = [
+        {"$match": filter_query},
+        {"$addFields": {
+            "days_until_event": {
+                "$divide": [
+                    {"$subtract": ["$start_date", datetime.utcnow()]},
+                    86400000  # milliseconds in a day
+                ]
+            }
+        }},
+        {"$addFields": {
+            "date_proximity_score": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$lte": ["$days_until_event", 0]}, "then": 0},
+                        {"case": {"$lte": ["$days_until_event", 1]}, "then": 30},
+                        {"case": {"$lte": ["$days_until_event", 3]}, "then": 25},
+                        {"case": {"$lte": ["$days_until_event", 7]}, "then": 20},
+                        {"case": {"$lte": ["$days_until_event", 30]}, "then": 15}
+                    ],
+                    "default": 10
+                }
+            }
+        }},
+        {"$addFields": {
+            "extraction_quality_score": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$eq": ["$extraction_method", "firecrawl"]}, "then": 50},  # Maximum priority
+                        {"case": {"$eq": ["$extraction_method", "hybrid"]}, "then": 25},
+                        {"case": {"$eq": ["$extraction_method", "perplexity"]}, "then": 15}
+                    ],
+                    "default": 5
+                }
+            }
+        }},
+        {"$addFields": {
+            "mydscvr_choice_score": {
+                "$add": [
+                    {"$multiply": [{"$ifNull": ["$family_score", 75]}, 0.3]},
+                    {"$multiply": ["$date_proximity_score", 0.2]},
+                    {"$multiply": ["$extraction_quality_score", 0.5]}  # 50% weight for extraction quality
+                ]
+            }
+        }},
+        {"$sort": {"mydscvr_choice_score": -1, "start_date": 1}},
+        {"$limit": 1}
+    ]
+    
+    events = await db.events.aggregate(pipeline).to_list(length=1)
+    
+    if not events:
+        raise HTTPException(status_code=404, detail="No suitable events found for MyDscvr's Choice")
+    
+    # Increment view count for the chosen event
+    event = events[0]
+    await db.events.update_one(
+        {"_id": event["_id"]},
+        {"$inc": {"view_count": 1}}
+    )
+    
+    return await _convert_event_to_response(event)
+
+
 @router.get("/recommendations/family", response_model=EventListResponse)
 async def get_family_recommendations(
     limit: int = Query(10, ge=1, le=50),
