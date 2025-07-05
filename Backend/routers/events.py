@@ -13,10 +13,6 @@ from database import get_mongodb
 from schemas import (
     EventResponse, EventListResponse
 )
-from utils.date_utils import (
-    calculate_date_range, get_events_date_filter_query, filter_events_by_day_type,
-    get_available_date_filters, is_weekday, is_weekend_day, get_dubai_now
-)
 from utils.deduplication import EventDeduplicator
 # from utils.rate_limiting import search_rate_limit  # Optional
 # from routers.auth import get_current_user  # Removed PostgreSQL auth
@@ -85,7 +81,6 @@ async def get_events(
     area: Optional[str] = Query(None, description="Dubai area (Marina, JBR, etc.)"),
     date_from: Optional[datetime] = Query(None, description="Events from this date"),
     date_to: Optional[datetime] = Query(None, description="Events until this date"),
-    date_filter: Optional[str] = Query(None, description="Smart date filter: today, tomorrow, this_week, next_week, this_weekend, next_weekend, this_month, next_month, weekdays, weekends"),
     price_max: Optional[float] = Query(None, description="Maximum price in AED"),
     price_min: Optional[float] = Query(None, description="Minimum price in AED"),
     age_group: Optional[str] = Query(None, description="Age group (child, teen, adult, family)"),
@@ -112,19 +107,8 @@ async def get_events(
     # Filter by end_date >= current_time to include ongoing events
     filter_query["end_date"] = {"$gte": current_time}
     
-    # Smart date filtering - takes precedence over manual date_from/date_to
-    use_post_filter = False
-    if date_filter:
-        if date_filter in ['weekdays', 'weekends']:
-            # These require post-processing after MongoDB query
-            use_post_filter = True
-        else:
-            # Apply smart date range filter
-            smart_date_query = get_events_date_filter_query(date_filter)
-            if smart_date_query:
-                filter_query.update(smart_date_query)
-    elif date_from or date_to:
-        # Fallback to manual date filtering if no smart filter
+    # Additional date filtering from parameters for start_date
+    if date_from or date_to:
         start_date_filter = {}
         if date_from:
             start_date_filter["$gte"] = date_from
@@ -191,28 +175,12 @@ async def get_events(
     # Calculate pagination
     skip = (page - 1) * per_page
     
-    # Execute queries with special handling for weekday/weekend filters
-    if use_post_filter and date_filter in ['weekdays', 'weekends']:
-        # For weekday/weekend filtering, we need to get more events and filter post-query
-        # Get extra events to account for filtering
-        extra_limit = per_page * 3  # Get 3x more events to ensure we have enough after filtering
-        events_cursor = db.events.find(filter_query).sort(sort_query).limit(extra_limit)
-        all_events = await events_cursor.to_list(length=extra_limit)
-        
-        # Apply weekday/weekend filtering
-        filtered_events = filter_events_by_day_type(all_events, date_filter)
-        
-        # Apply pagination to filtered results
-        total_filtered = len(filtered_events)
-        events = filtered_events[skip:skip + per_page]
-        total = total_filtered
-    else:
-        # Normal query with pagination
-        events_cursor = db.events.find(filter_query).sort(sort_query).skip(skip).limit(per_page)
-        events = await events_cursor.to_list(length=per_page)
-        
-        # Get total count for pagination
-        total = await db.events.count_documents(filter_query)
+    # Execute queries
+    events_cursor = db.events.find(filter_query).sort(sort_query).skip(skip).limit(per_page)
+    events = await events_cursor.to_list(length=per_page)
+    
+    # Get total count for pagination
+    total = await db.events.count_documents(filter_query)
     
     # Convert to response format
     event_responses = []
@@ -240,18 +208,119 @@ async def get_events(
     )
 
 
-@router.get("/filters/date-options")
-async def get_date_filter_options():
+@router.get("/trending", response_model=dict)
+async def get_trending_events_enhanced(
+    limit: int = Query(20, ge=1, le=50),
+    enhanced: bool = Query(False),
+    include_quality_metrics: bool = Query(False),
+    include_social_media: bool = Query(False),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
     """
-    Get available smart date filter options for the frontend
+    Get trending events with enhanced features for frontend compatibility
+    This endpoint supports the enhanced_events_service.dart call
     """
+    filter_query = {"status": "active", "end_date": {"$gte": datetime.utcnow()}}
+    
+    # Prioritize firecrawl extracted events for quality
+    if enhanced:
+        filter_query["extraction_method"] = "firecrawl"
+    
+    # Sort by trending score (view_count + save_count * 2)
+    pipeline = [
+        {"$match": filter_query},
+        {"$addFields": {
+            "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
+        }},
+        {"$sort": {"trending_score": -1}},
+        {"$limit": limit}
+    ]
+    
+    events = await db.events.aggregate(pipeline).to_list(length=limit)
+    
+    event_responses = []
+    for event in events:
+        event_responses.append(await _convert_event_to_response(event))
+    
     return {
-        "date_filters": get_available_date_filters(),
-        "current_time": {
-            "dubai": get_dubai_now().isoformat(),
-            "utc": datetime.utcnow().isoformat()
-        }
+        "success": True,
+        "events": event_responses,
+        "total": len(events),
+        "message": "Trending events retrieved successfully"
     }
+
+
+@router.get("/firecrawl/list", response_model=EventListResponse)
+async def get_firecrawl_events(
+    limit: int = Query(20, ge=1, le=100),
+    area: Optional[str] = Query(None),
+    sort_by: str = Query("trending_score", description="Sort by: trending_score, start_date, family_score"),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Get firecrawl-extracted events (high-quality verified events)
+    This endpoint supports the frontend's getFirecrawlEvents call
+    """
+    filter_query = {
+        "status": "active",
+        "end_date": {"$gte": datetime.utcnow()},
+        "extraction_method": "firecrawl"
+    }
+    
+    if area:
+        filter_query["venue.area"] = {"$regex": area, "$options": "i"}
+    
+    # Determine sort order
+    sort_field = "start_date"
+    if sort_by == "trending_score":
+        # Use aggregation pipeline for trending score
+        pipeline = [
+            {"$match": filter_query},
+            {"$addFields": {
+                "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
+            }},
+            {"$sort": {"trending_score": -1}},
+            {"$limit": limit}
+        ]
+        events = await db.events.aggregate(pipeline).to_list(length=limit)
+    elif sort_by == "family_score":
+        sort_field = "family_score"
+        events = await db.events.find(filter_query).sort([(sort_field, -1)]).limit(limit).to_list(length=limit)
+    else:
+        events = await db.events.find(filter_query).sort([(sort_field, 1)]).limit(limit).to_list(length=limit)
+    
+    event_responses = []
+    for event in events:
+        event_responses.append(await _convert_event_to_response(event))
+    
+    return EventListResponse(
+        events=event_responses,
+        total=len(events),
+        page=1,
+        per_page=limit,
+        total_pages=1,
+        pagination={"page": 1, "per_page": limit, "total": len(events), "total_pages": 1, "has_next": False, "has_prev": False},
+        filters=await _get_filter_options(db)
+    )
+
+
+@router.get("/saved/list", response_model=EventListResponse)
+async def get_saved_events(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100),
+    # current_user: User = Depends(get_current_user),  # Temporarily disabled
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Get user's saved events
+    """
+    # TODO: Implement fetching from PostgreSQL user_events table
+    # For now, return empty list
+    return EventListResponse(
+        events=[],
+        pagination={"page": 1, "per_page": 20, "total": 0, "total_pages": 0, "has_next": False, "has_prev": False},
+        filters={"categories": [], "areas": [], "price_ranges": [], "age_groups": []}
+    )
 
 
 @router.get("/{event_id}", response_model=EventResponse)
@@ -286,43 +355,23 @@ async def get_event(
     return await _convert_event_to_response(event, is_saved=is_saved)
 
 
-@router.get("/saved/list", response_model=EventListResponse)
-async def get_saved_events(
-    page: int = Query(1, ge=1),
-    per_page: int = Query(20, ge=1, le=100),
-    # current_user: User = Depends(get_current_user),  # Temporarily disabled
-    db: AsyncIOMotorDatabase = Depends(get_mongodb)
-):
-    """
-    Get user's saved events
-    """
-    # TODO: Implement fetching from PostgreSQL user_events table
-    # For now, return empty list
-    return EventListResponse(
-        events=[],
-        pagination={"page": 1, "per_page": 20, "total": 0, "total_pages": 0, "has_next": False, "has_prev": False},
-        filters={"categories": [], "areas": [], "price_ranges": [], "age_groups": []}
-    )
-
-
 @router.get("/trending/list", response_model=EventListResponse)
 async def get_trending_events(
     limit: int = Query(10, ge=1, le=50),
     area: Optional[str] = Query(None),
-    extraction_method: Optional[str] = Query(None, description="Filter by extraction method (e.g., 'firecrawl', 'perplexity', 'api')"),
-    firecrawl_only: bool = Query(False, description="Show only firecrawl-extracted events"),
+    firecrawl_only: bool = Query(False),
+    extraction_method: Optional[str] = Query(None),
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """
     Get trending events based on view count and save count
-    Supports filtering by extraction method or firecrawl-only events
     """
     filter_query = {"status": "active", "end_date": {"$gte": datetime.utcnow()}}
     
     if area:
         filter_query["venue.area"] = {"$regex": area, "$options": "i"}
     
-    # Filter by extraction method
+    # Prioritize firecrawl extracted events for quality
     if firecrawl_only:
         filter_query["extraction_method"] = "firecrawl"
     elif extraction_method:
@@ -355,65 +404,6 @@ async def get_trending_events(
     )
 
 
-@router.get("/firecrawl/list", response_model=EventListResponse)
-async def get_firecrawl_events(
-    limit: int = Query(20, ge=1, le=100),
-    area: Optional[str] = Query(None),
-    sort_by: str = Query("trending_score", description="Sort by: trending_score, start_date, rating"),
-    db: AsyncIOMotorDatabase = Depends(get_mongodb)
-):
-    """
-    Get events specifically extracted via Firecrawl
-    These are high-quality events scraped from verified sources
-    """
-    filter_query = {
-        "status": "active", 
-        "end_date": {"$gte": datetime.utcnow()},
-        "extraction_method": "firecrawl"
-    }
-    
-    if area:
-        filter_query["venue.area"] = {"$regex": area, "$options": "i"}
-    
-    # Build sort criteria
-    sort_criteria = {}
-    if sort_by == "trending_score":
-        # Use aggregation pipeline for trending score calculation
-        pipeline = [
-            {"$match": filter_query},
-            {"$addFields": {
-                "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
-            }},
-            {"$sort": {"trending_score": -1}},
-            {"$limit": limit}
-        ]
-        events = await db.events.aggregate(pipeline).to_list(length=limit)
-    else:
-        # Simple sort for other criteria
-        if sort_by == "start_date":
-            sort_criteria["start_date"] = 1
-        elif sort_by == "rating":
-            sort_criteria["rating"] = -1
-        else:
-            sort_criteria["start_date"] = 1  # Default fallback
-        
-        events = await db.events.find(filter_query).sort(sort_criteria).limit(limit).to_list(length=limit)
-    
-    event_responses = []
-    for event in events:
-        event_responses.append(await _convert_event_to_response(event))
-    
-    return EventListResponse(
-        events=event_responses,
-        total=len(events),
-        page=1,
-        per_page=limit,
-        total_pages=1,
-        pagination={"page": 1, "per_page": limit, "total": len(events), "total_pages": 1, "has_next": False, "has_prev": False},
-        filters=await _get_filter_options(db)
-    )
-
-
 @router.get("/featured/list", response_model=EventListResponse)
 async def get_featured_events(
     limit: int = Query(12, ge=1, le=50),
@@ -421,20 +411,20 @@ async def get_featured_events(
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """
-    Get featured events using enhanced algorithm that considers family score and date proximity
-    Since is_featured field might not exist, we select top events based on family score and proximity
+    Get featured events using enhanced algorithm that considers:
+    1. Extraction method quality (firecrawl > perplexity > others)
+    2. Family score 
+    3. Date proximity
     """
     filter_query = {
         "status": "active",
         "end_date": {"$gte": datetime.utcnow()}
-        # Removed is_featured requirement since it might not exist
     }
     
     if area:
         filter_query["venue.area"] = {"$regex": area, "$options": "i"}
     
-    # Sort by combination of family_score and date proximity
-    # Create a scoring pipeline that considers both family_score and days until event
+    # Enhanced scoring pipeline with extraction method priority
     pipeline = [
         {"$match": filter_query},
         {"$addFields": {
@@ -460,10 +450,23 @@ async def get_featured_events(
             }
         }},
         {"$addFields": {
+            "extraction_quality_score": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$eq": ["$extraction_method", "firecrawl"]}, "then": 30},
+                        {"case": {"$eq": ["$extraction_method", "perplexity"]}, "then": 20},
+                        {"case": {"$eq": ["$extraction_method", "hybrid"]}, "then": 25}
+                    ],
+                    "default": 10
+                }
+            }
+        }},
+        {"$addFields": {
             "featured_score": {
                 "$add": [
-                    {"$multiply": [{"$ifNull": ["$family_score", 75]}, 0.7]},
-                    {"$multiply": ["$date_proximity_score", 0.3]}
+                    {"$multiply": [{"$ifNull": ["$family_score", 75]}, 0.5]},
+                    {"$multiply": ["$date_proximity_score", 0.25]},
+                    {"$multiply": ["$extraction_quality_score", 0.25]}
                 ]
             }
         }},
