@@ -285,6 +285,15 @@ app.include_router(saved_events.router)
 # Event advice router for replacing reviews
 app.include_router(event_advice.router)
 
+# MyDscvr's Choice daily event selection router
+try:
+    from routers import mydscvr_choice  # Daily featured event selection with Firecrawl priority
+    app.include_router(mydscvr_choice.router)
+    logger.info("✅ MyDscvr's Choice router included successfully")
+except Exception as e:
+    logger.error(f"❌ Failed to import MyDscvr's Choice router: {e}")
+    logger.warning("⚠️ MyDscvr's Choice router not available")
+
 # Google OAuth router
 # app.include_router(google_auth.router, prefix="/api")  # Temporarily disabled - missing dependencies
 

@@ -119,6 +119,50 @@ async def trigger_weekly_report():
         logger.error(f"Error triggering weekly report: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/refresh-mydscvr-choice")
+async def trigger_refresh_mydscvr_choice():
+    """
+    Refresh MyDscvr's Choice daily featured event
+    
+    Previously: No automated task
+    Now: Manual trigger or cron job at 7 AM UAE (3 AM UTC) - Daily refresh
+    """
+    try:
+        from routers.mydscvr_choice import MyDscvrChoiceService
+        from database import get_mongodb_client
+        
+        mongodb = await get_mongodb_client()
+        service = MyDscvrChoiceService(mongodb)
+        
+        logger.info("🎯 Triggering MyDscvr's Choice daily refresh...")
+        selected_event = await service.select_daily_event()
+        
+        if selected_event:
+            saved_choice = await service.save_daily_choice(selected_event)
+            return {
+                "task": "refresh_mydscvr_choice",
+                "triggered_at": datetime.now().isoformat(),
+                "result": {
+                    "success": True,
+                    "event_title": saved_choice["event_data"]["title"],
+                    "event_id": saved_choice["event_id"],
+                    "total_score": saved_choice["total_score"],
+                    "is_firecrawl": saved_choice["is_firecrawl"]
+                }
+            }
+        else:
+            return {
+                "task": "refresh_mydscvr_choice",
+                "triggered_at": datetime.now().isoformat(),
+                "result": {
+                    "success": False,
+                    "message": "No suitable events available for MyDscvr's Choice"
+                }
+            }
+    except Exception as e:
+        logger.error(f"Error triggering MyDscvr's Choice refresh: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/status")
 async def get_task_status():
     """
@@ -145,12 +189,18 @@ async def get_task_status():
             {}, sort=[("generated_at", -1)]
         )
         
+        # Get last MyDscvr's Choice
+        last_choice = await mongodb.mydscvr_daily_choice.find_one(
+            {}, sort=[("created_at", -1)]
+        )
+        
         return {
             "system_status": "operational",
             "checked_at": datetime.now().isoformat(),
             "last_health_check": last_health.get("checked_at").isoformat() if last_health else None,
             "last_hidden_gem": last_gem.get("created_at").isoformat() if last_gem else None,
             "last_weekly_report": last_report.get("generated_at").isoformat() if last_report else None,
+            "last_mydscvr_choice": last_choice.get("created_at").isoformat() if last_choice else None,
             "notes": "Celery removed - using direct API calls and cron jobs"
         }
         
