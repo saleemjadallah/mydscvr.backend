@@ -17,7 +17,7 @@ from models.otp_models import OTPGenerationRequest, OTPVerificationRequest
 from services.otp_service import OTPService
 from services.mongodb_auth import MongoAuthService
 from schemas.user_schemas import (
-    UserRegistrationRequest, UserLoginRequest, 
+    UserRegistrationRequest, UserLoginRequest, UserUpdateRequest,
     UserRegistrationResponse, AuthResponse, UserProfileResponse, 
     MessageResponse
 )
@@ -53,6 +53,7 @@ def create_user_profile_response(user_data: dict) -> dict:
         "avatar": user_data.get("avatar"),
         "phone_number": user_data.get("phone_number"),
         "date_of_birth": user_data.get("date_of_birth"),
+        "gender": user_data.get("gender"),
         "onboarding_completed": user_data.get("onboarding_completed", False),
         "family_members": user_data.get("family_members", []),
         "preferences": user_data.get("preferences", {
@@ -381,6 +382,158 @@ async def get_user_profile(
     Get user profile (requires verified email)
     """
     return UserProfileResponse(**current_user.dict())
+
+
+@router.put("/profile", response_model=UserProfileResponse)
+async def update_user_profile(
+    update_data: UserUpdateRequest,
+    current_user: UserModel = Depends(get_current_verified_user),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Update user profile information
+    """
+    try:
+        logger.info(f"🔄 [PROFILE UPDATE] Starting update for user: {current_user.email}")
+        
+        # Build update document with only provided fields
+        update_fields = {}
+        
+        if update_data.first_name is not None:
+            update_fields["first_name"] = update_data.first_name
+        if update_data.last_name is not None:
+            update_fields["last_name"] = update_data.last_name
+        if update_data.phone_number is not None:
+            update_fields["phone_number"] = update_data.phone_number
+        if update_data.date_of_birth is not None:
+            update_fields["date_of_birth"] = update_data.date_of_birth
+        if update_data.gender is not None:
+            update_fields["gender"] = update_data.gender
+        if update_data.avatar is not None:
+            update_fields["avatar"] = update_data.avatar
+        if update_data.privacy_settings is not None:
+            update_fields["privacy_settings"] = update_data.privacy_settings
+        
+        # Always update the timestamp
+        update_fields["updated_at"] = datetime.utcnow()
+        
+        logger.info(f"🔄 [PROFILE UPDATE] Updating fields: {list(update_fields.keys())}")
+        
+        # Update user in database
+        result = await db.users.update_one(
+            {"_id": ObjectId(current_user.id)},
+            {"$set": update_fields}
+        )
+        
+        if result.matched_count == 0:
+            logger.error(f"❌ [PROFILE UPDATE] User not found: {current_user.id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        if result.modified_count == 0:
+            logger.warning(f"⚠️ [PROFILE UPDATE] No changes made for user: {current_user.email}")
+        
+        # Retrieve updated user
+        updated_user_doc = await db.users.find_one({"_id": ObjectId(current_user.id)})
+        if not updated_user_doc:
+            logger.error(f"❌ [PROFILE UPDATE] Could not retrieve updated user: {current_user.id}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to retrieve updated profile"
+            )
+        
+        # Convert to UserModel and then to response
+        updated_user = UserModel(**updated_user_doc)
+        logger.info(f"✅ [PROFILE UPDATE] Successfully updated profile for: {current_user.email}")
+        
+        return UserProfileResponse(**updated_user.dict())
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ [PROFILE UPDATE] Error updating profile: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update profile"
+        )
+
+
+@router.post("/profile/update", response_model=UserProfileResponse)
+async def update_user_profile_post(
+    update_data: UserUpdateRequest,
+    current_user: UserModel = Depends(get_current_verified_user),
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """
+    Update user profile information (POST alternative for Netlify compatibility)
+    """
+    try:
+        logger.info(f"🔄 [PROFILE UPDATE POST] Starting update for user: {current_user.email}")
+        
+        # Build update document with only provided fields
+        update_fields = {}
+        
+        if update_data.first_name is not None:
+            update_fields["first_name"] = update_data.first_name
+        if update_data.last_name is not None:
+            update_fields["last_name"] = update_data.last_name
+        if update_data.phone_number is not None:
+            update_fields["phone_number"] = update_data.phone_number
+        if update_data.date_of_birth is not None:
+            update_fields["date_of_birth"] = update_data.date_of_birth
+        if update_data.gender is not None:
+            update_fields["gender"] = update_data.gender
+        if update_data.avatar is not None:
+            update_fields["avatar"] = update_data.avatar
+        if update_data.privacy_settings is not None:
+            update_fields["privacy_settings"] = update_data.privacy_settings
+        
+        # Always update the timestamp
+        update_fields["updated_at"] = datetime.utcnow()
+        
+        logger.info(f"🔄 [PROFILE UPDATE POST] Updating fields: {list(update_fields.keys())}")
+        
+        # Update user in database
+        result = await db.users.update_one(
+            {"_id": ObjectId(current_user.id)},
+            {"$set": update_fields}
+        )
+        
+        if result.matched_count == 0:
+            logger.error(f"❌ [PROFILE UPDATE POST] User not found: {current_user.id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        if result.modified_count == 0:
+            logger.warning(f"⚠️ [PROFILE UPDATE POST] No changes made for user: {current_user.email}")
+        
+        # Retrieve updated user
+        updated_user_doc = await db.users.find_one({"_id": ObjectId(current_user.id)})
+        if not updated_user_doc:
+            logger.error(f"❌ [PROFILE UPDATE POST] Could not retrieve updated user: {current_user.id}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to retrieve updated profile"
+            )
+        
+        # Convert to UserModel and then to response
+        updated_user = UserModel(**updated_user_doc)
+        logger.info(f"✅ [PROFILE UPDATE POST] Successfully updated profile for: {current_user.email}")
+        
+        return UserProfileResponse(**updated_user.dict())
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ [PROFILE UPDATE POST] Error updating profile: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update profile"
+        )
 
 
 @router.get("/test-token")
