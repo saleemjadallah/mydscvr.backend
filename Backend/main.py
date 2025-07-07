@@ -52,7 +52,7 @@ from routers import saved_events
 # Event advice router for replacing reviews
 from routers import event_advice
 # Google OAuth router
-from routers import google_auth
+# from routers import google_auth  # Temporarily disabled - missing dependencies
 
 # Create FastAPI app
 app = FastAPI(
@@ -286,7 +286,7 @@ app.include_router(saved_events.router)
 app.include_router(event_advice.router)
 
 # Google OAuth router
-app.include_router(google_auth.router, prefix="/api")
+# app.include_router(google_auth.router, prefix="/api")  # Temporarily disabled - missing dependencies
 
 
 # Root endpoint

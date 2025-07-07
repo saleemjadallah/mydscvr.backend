@@ -750,69 +750,76 @@ async def share_gem(
         {"$inc": {"share_count": 1}}
     )
     
-    # Update user reveal to mark as shared
-    await service.reveals_collection.update_one(
-        {"user_id": user_id, "gem_id": gem_id},
-        {"$set": {"shared": True}}
-    )
-    
     # Update analytics
     await service._update_analytics(gem_id, "share")
     
-    return {"success": True, "message": "Share tracked successfully"}
+    return {"success": True, "message": "Gem share tracked"}
 
 
-@router.get("/analytics/{gem_id}")
-async def get_gem_analytics(
+@router.get("/gems/{gem_id}")
+async def get_gem_by_id(
     gem_id: str,
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
-    """Get analytics for a specific gem (admin endpoint)"""
+    """Get specific gem by ID"""
     
     service = HiddenGemService(db)
     
-    # Get gem
     gem_doc = await service.collection.find_one({"gem_id": gem_id})
+    
     if not gem_doc:
         raise HTTPException(status_code=404, detail="Gem not found")
     
-    # Get analytics
-    analytics_doc = await service.analytics_collection.find_one({"gem_id": gem_id})
+    return HiddenGem(**gem_doc)
+
+
+@router.get("/history")
+async def get_gem_history(
+    limit: int = 7,
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """Get recent gem history"""
+    
+    service = HiddenGemService(db)
+    
+    # Get recent gems
+    gems_cursor = service.collection.find(
+        {},
+        {"gem_date": 1, "gem_title": 1, "gem_tagline": 1, "gem_score": 1, "gem_id": 1}
+    ).sort("gem_date", -1).limit(limit)
+    
+    gems = await gems_cursor.to_list(length=limit)
+    
+    return [HiddenGem(**gem) for gem in gems]
+
+
+@router.get("/analytics/summary")
+async def get_analytics_summary(
+    db: AsyncIOMotorDatabase = Depends(get_mongodb)
+):
+    """Get gem analytics summary"""
+    
+    service = HiddenGemService(db)
+    
+    # Get total gems count
+    total_gems = await service.collection.count_documents({})
+    
+    # Get total reveals
+    total_reveals = await service.reveals_collection.count_documents({})
+    
+    # Get active streaks
+    active_streaks = await service.streaks_collection.count_documents({"current_streak": {"$gt": 0}})
+    
+    # Get average gem score
+    pipeline = [
+        {"$group": {"_id": None, "avg_score": {"$avg": "$gem_score"}}}
+    ]
+    avg_score_result = await service.collection.aggregate(pipeline).to_list(length=1)
+    avg_score = avg_score_result[0]["avg_score"] if avg_score_result else 0
     
     return {
-        "gem": gem_doc,
-        "analytics": analytics_doc,
-        "reveal_rate": (analytics_doc.get("total_reveals", 0) / max(analytics_doc.get("total_views", 1), 1)) * 100
+        "total_gems": total_gems,
+        "total_reveals": total_reveals,
+        "active_streaks": active_streaks,
+        "average_gem_score": round(avg_score, 1)
     }
-
-
-@router.post("/trigger-daily-creation")
-async def trigger_daily_gem_creation():
-    """Manually trigger daily gem creation (for testing and emergency use)"""
-    try:
-        from lifecycle_management.schedulers.hidden_gems_tasks import create_daily_hidden_gem
-        
-        # Create a mock task instance for manual triggering
-        class MockRequest:
-            def __init__(self):
-                self.id = f'manual_trigger_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
-
-        class MockTask:
-            def __init__(self):
-                self.request = MockRequest()
-
-        mock_task = MockTask()
-        result = create_daily_hidden_gem(mock_task)
-        
-        return {
-            "success": True,
-            "message": "Daily gem creation triggered successfully",
-            "result": result
-        }
-        
-    except Exception as e:
-        logger.error(f"Failed to trigger daily gem creation: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Failed to trigger daily gem creation: {str(e)}"
-        )
