@@ -298,6 +298,16 @@ except Exception as e:
 # app.include_router(google_auth.router, prefix="/api")  # Temporarily disabled - missing dependencies
 
 
+# Ads.txt redirect for Ezoic
+@app.get("/ads.txt")
+async def ads_txt_redirect():
+    """
+    Redirect ads.txt to Ezoic Ads.txt Manager
+    """
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="https://srv.adstxtmanager.com/76269/mydscvr.ai", status_code=301)
+
+
 # Root endpoint
 @app.get("/")
 async def root():
