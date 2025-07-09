@@ -672,7 +672,7 @@ async def get_current_gem(
             # Create a proper error response with CORS headers
             from fastapi.responses import JSONResponse
             error_response = JSONResponse(
-                status_code=404,
+                status_code=200,
                 content={
                     "success": False,
                     "message": "No gem available for today",
