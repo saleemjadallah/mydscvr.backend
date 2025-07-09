@@ -284,13 +284,13 @@ IMPORTANT:
         
         # Initialize analytics
         analytics = DailyGemAnalytics(
-            date=date.today(),
+            analytics_date=date.today(),
             gem_id=hidden_gem.gem_id
         )
         analytics_dict = analytics.dict()
         # Convert date to datetime for MongoDB serialization
-        if 'date' in analytics_dict:
-            analytics_dict['date'] = datetime.combine(analytics_dict['date'], datetime.min.time())
+        if 'analytics_date' in analytics_dict:
+            analytics_dict['analytics_date'] = datetime.combine(analytics_dict['analytics_date'], datetime.min.time())
         await self.analytics_collection.insert_one(analytics_dict)
         
         return hidden_gem
@@ -554,7 +554,7 @@ IMPORTANT:
         
         if update_query:
             await self.analytics_collection.update_one(
-                {"gem_id": gem_id, "date": today},
+                {"gem_id": gem_id, "analytics_date": today},
                 update_query,
                 upsert=True
             )
