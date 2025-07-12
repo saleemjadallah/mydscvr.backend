@@ -771,8 +771,10 @@ async def _convert_event_to_response(event: dict, is_saved: bool = False) -> Eve
     # Extract image URLs
     image_urls = []
     
-    # Priority order: ai_image_url > image_url > image_urls
-    if event.get("ai_image_url"):
+    # Priority order: images.ai_generated > ai_image_url > image_url > image_urls
+    if event.get("images") and isinstance(event["images"], dict) and event["images"].get("ai_generated"):
+        image_urls = [event["images"]["ai_generated"]]
+    elif event.get("ai_image_url"):
         image_urls = [event["ai_image_url"]]
     elif event.get("image_url"):
         image_urls = [event["image_url"]]
