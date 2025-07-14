@@ -15,6 +15,7 @@ from schemas import (
     EventResponse, EventListResponse
 )
 from utils.deduplication import EventDeduplicator
+from utils.date_utils import calculate_date_range
 # from utils.rate_limiting import search_rate_limit  # Optional
 # from routers.auth import get_current_user  # Removed PostgreSQL auth
 # from models.postgres_models import User  # Removed PostgreSQL models
@@ -82,6 +83,7 @@ async def get_events(
     area: Optional[str] = Query(None, description="Dubai area (Marina, JBR, etc.)"),
     date_from: Optional[datetime] = Query(None, description="Events from this date"),
     date_to: Optional[datetime] = Query(None, description="Events until this date"),
+    date_filter: Optional[str] = Query(None, description="Predefined date filter: today, tomorrow, this_week, next_week, this_weekend, next_weekend, this_month, next_month"),
     price_max: Optional[float] = Query(None, description="Maximum price in AED"),
     price_min: Optional[float] = Query(None, description="Minimum price in AED"),
     age_group: Optional[str] = Query(None, description="Age group (child, teen, adult, family)"),
@@ -108,8 +110,22 @@ async def get_events(
     # Filter by end_date >= current_time to include ongoing events
     filter_query["end_date"] = {"$gte": current_time}
     
+    # Handle predefined date filters (today, this_week, etc.)
+    if date_filter:
+        try:
+            filter_start, filter_end = calculate_date_range(date_filter)
+            # For predefined filters, we want events that overlap with the date range
+            # This means events that start before the range ends AND end after the range starts
+            filter_query["$and"] = [
+                {"start_date": {"$lte": filter_end}},
+                {"end_date": {"$gte": filter_start}}
+            ]
+        except Exception as e:
+            print(f"Error processing date filter '{date_filter}': {e}")
+            # Fall back to no date filtering if there's an error
+    
     # Additional date filtering from parameters for start_date
-    if date_from or date_to:
+    elif date_from or date_to:
         start_date_filter = {}
         if date_from:
             start_date_filter["$gte"] = date_from
