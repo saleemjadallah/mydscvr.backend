@@ -37,6 +37,21 @@ async def _convert_event_to_response(event: dict) -> dict:
             return date_val.isoformat()
         return date_val
     
+    # Extract image URLs with priority order
+    image_urls = []
+    
+    # Priority order: images.ai_generated > ai_image_url > image_url > image_urls > imageUrls
+    if event.get("images") and isinstance(event["images"], dict) and event["images"].get("ai_generated"):
+        image_urls = [event["images"]["ai_generated"]]
+    elif event.get("ai_image_url"):
+        image_urls = [event["ai_image_url"]]
+    elif event.get("image_url"):
+        image_urls = [event["image_url"]]
+    elif event.get("image_urls"):
+        image_urls = event["image_urls"]
+    elif event.get("imageUrls"):
+        image_urls = event["imageUrls"]
+    
     return {
         "id": str(event.get("_id", "")),
         "title": event.get("title", ""),
@@ -53,7 +68,7 @@ async def _convert_event_to_response(event: dict) -> dict:
         "family_score": event.get("familyScore"),
         "age_range": event.get("ageRange", "All ages"),
         "tags": event.get("tags", []),
-        "image_urls": event.get("imageUrls", []),
+        "image_urls": image_urls,
         "booking_url": event.get("bookingUrl"),
         "is_family_friendly": event.get("familySuitability", {}).get("isAllAges", False),
         "is_saved": False,
