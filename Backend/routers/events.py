@@ -107,25 +107,28 @@ async def get_events(
     # This includes ongoing multi-day events and future events
     current_time = datetime.utcnow()
     
-    # Filter by end_date >= current_time to include ongoing events
-    filter_query["end_date"] = {"$gte": current_time}
-    
     # Handle predefined date filters (today, this_week, etc.)
     if date_filter:
         try:
             filter_start, filter_end = calculate_date_range(date_filter)
             # For predefined filters, we want events that overlap with the date range
             # This means events that start before the range ends AND end after the range starts
+            # Remove the general end_date filter since we're using specific date range
+            filter_query.pop("end_date", None)
             filter_query["$and"] = [
                 {"start_date": {"$lte": filter_end}},
                 {"end_date": {"$gte": filter_start}}
             ]
         except Exception as e:
             print(f"Error processing date filter '{date_filter}': {e}")
-            # Fall back to no date filtering if there's an error
+            # Fall back to default filtering if there's an error
+            filter_query["end_date"] = {"$gte": current_time}
+    else:
+        # Only apply general filter if no date_filter is specified
+        filter_query["end_date"] = {"$gte": current_time}
     
     # Additional date filtering from parameters for start_date
-    elif date_from or date_to:
+    if date_from or date_to:
         start_date_filter = {}
         if date_from:
             start_date_filter["$gte"] = date_from
