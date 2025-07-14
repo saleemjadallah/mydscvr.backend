@@ -84,6 +84,7 @@ async def get_events(
     date_from: Optional[datetime] = Query(None, description="Events from this date"),
     date_to: Optional[datetime] = Query(None, description="Events until this date"),
     date_filter: Optional[str] = Query(None, description="Predefined date filter: today, tomorrow, this_week, next_week, this_weekend, next_weekend, this_month, next_month"),
+    date_range: Optional[str] = Query(None, description="Alias for date_filter (for frontend compatibility)"),
     price_max: Optional[float] = Query(None, description="Maximum price in AED"),
     price_min: Optional[float] = Query(None, description="Minimum price in AED"),
     age_group: Optional[str] = Query(None, description="Age group (child, teen, adult, family)"),
@@ -108,9 +109,11 @@ async def get_events(
     current_time = datetime.utcnow()
     
     # Handle predefined date filters (today, this_week, etc.)
-    if date_filter:
+    # Support both date_filter and date_range parameters for compatibility
+    active_date_filter = date_filter or date_range
+    if active_date_filter and active_date_filter.lower() != 'all':
         try:
-            filter_start, filter_end = calculate_date_range(date_filter)
+            filter_start, filter_end = calculate_date_range(active_date_filter)
             # For predefined filters, we want events that overlap with the date range
             # This means events that start before the range ends AND end after the range starts
             # Remove the general end_date filter since we're using specific date range
@@ -120,7 +123,7 @@ async def get_events(
                 {"end_date": {"$gte": filter_start}}
             ]
         except Exception as e:
-            print(f"Error processing date filter '{date_filter}': {e}")
+            print(f"Error processing date filter '{active_date_filter}': {e}")
             # Fall back to default filtering if there's an error
             filter_query["end_date"] = {"$gte": current_time}
     else:
