@@ -269,21 +269,8 @@ async def get_trending_events_enhanced(
     
     events = await db.events.aggregate(pipeline).to_list(length=pool_size)
     
-    # Use daily rotation like MyDscvr's Choice to ensure different events each day
-    # This provides deterministic variety while still selecting from high-quality trending events
-    if len(events) > limit:
-        # Get day of year for rotation
-        day_of_year = datetime.utcnow().timetuple().tm_yday
-        
-        # Rotate starting position based on day
-        # This ensures we show different events each day while maintaining quality
-        rotation_offset = (day_of_year * limit) % len(events)
-        
-        # Create a rotated list starting from the offset
-        rotated_events = events[rotation_offset:] + events[:rotation_offset]
-        
-        # Take the first 'limit' events from the rotated list
-        events = rotated_events[:limit]
+    # Daily rotation logic removed to allow for more dynamic trending events
+    # The frontend will handle any desired randomization or diversity
     
     event_responses = []
     for event in events:
