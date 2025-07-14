@@ -466,6 +466,7 @@ async def get_trending_events(
 async def get_featured_events(
     limit: int = Query(12, ge=1, le=50),
     area: Optional[str] = Query(None),
+    ai_images_only: bool = Query(False, description="Only return events that have an AI-generated image"),
     db: AsyncIOMotorDatabase = Depends(get_mongodb)
 ):
     """
@@ -473,6 +474,7 @@ async def get_featured_events(
     1. Extraction method quality (firecrawl > perplexity > others)
     2. Family score 
     3. Date proximity
+    4. AI image availability (if requested)
     """
     filter_query = {
         "status": "active",
@@ -481,6 +483,11 @@ async def get_featured_events(
     
     if area:
         filter_query["venue.area"] = {"$regex": area, "$options": "i"}
+
+    # If ai_images_only is True, add a filter for events with AI-generated images
+    if ai_images_only:
+        filter_query["images.ai_generated"] = {"$exists": True, "$ne": None, "$ne": ""}
+
     
     # Enhanced scoring pipeline with extraction method priority
     pipeline = [
