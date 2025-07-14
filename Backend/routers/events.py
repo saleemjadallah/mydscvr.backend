@@ -5,9 +5,10 @@ Phase 2: Search & Discovery implementation.
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
+import random
 
 from database import get_mongodb
 from schemas import (
@@ -220,11 +221,19 @@ async def get_trending_events_enhanced(
     Get trending events with enhanced features for frontend compatibility
     This endpoint supports the enhanced_events_service.dart call
     """
-    filter_query = {"status": "active", "end_date": {"$gte": datetime.utcnow()}}
+    current_date = datetime.utcnow()
+    filter_query = {
+        "status": "active", 
+        "end_date": {"$gte": current_date},
+        "start_date": {"$lte": current_date.replace(hour=23, minute=59, second=59) + timedelta(days=90)}  # Events within next 90 days
+    }
     
     # Prioritize firecrawl extracted events for quality
     if enhanced:
         filter_query["extraction_method"] = "firecrawl"
+    
+    # Get a larger pool of trending events to shuffle from
+    pool_size = min(limit * 3, 100)  # Get 3x the requested amount, max 100
     
     # Sort by trending score (view_count + save_count * 2)
     pipeline = [
@@ -233,10 +242,26 @@ async def get_trending_events_enhanced(
             "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
         }},
         {"$sort": {"trending_score": -1}},
-        {"$limit": limit}
+        {"$limit": pool_size}
     ]
     
-    events = await db.events.aggregate(pipeline).to_list(length=limit)
+    events = await db.events.aggregate(pipeline).to_list(length=pool_size)
+    
+    # Use daily rotation like MyDscvr's Choice to ensure different events each day
+    # This provides deterministic variety while still selecting from high-quality trending events
+    if len(events) > limit:
+        # Get day of year for rotation
+        day_of_year = datetime.utcnow().timetuple().tm_yday
+        
+        # Rotate starting position based on day
+        # This ensures we show different events each day while maintaining quality
+        rotation_offset = (day_of_year * limit) % len(events)
+        
+        # Create a rotated list starting from the offset
+        rotated_events = events[rotation_offset:] + events[:rotation_offset]
+        
+        # Take the first 'limit' events from the rotated list
+        events = rotated_events[:limit]
     
     event_responses = []
     for event in events:
@@ -245,7 +270,7 @@ async def get_trending_events_enhanced(
     return {
         "success": True,
         "events": event_responses,
-        "total": len(events),
+        "total": len(event_responses),
         "message": "Trending events retrieved successfully"
     }
 
@@ -366,7 +391,12 @@ async def get_trending_events(
     """
     Get trending events based on view count and save count
     """
-    filter_query = {"status": "active", "end_date": {"$gte": datetime.utcnow()}}
+    current_date = datetime.utcnow()
+    filter_query = {
+        "status": "active", 
+        "end_date": {"$gte": current_date},
+        "start_date": {"$lte": current_date.replace(hour=23, minute=59, second=59) + timedelta(days=90)}  # Events within next 90 days
+    }
     
     if area:
         filter_query["venue.area"] = {"$regex": area, "$options": "i"}
@@ -377,6 +407,9 @@ async def get_trending_events(
     elif extraction_method:
         filter_query["extraction_method"] = extraction_method
     
+    # Get a larger pool of trending events to shuffle from
+    pool_size = min(limit * 3, 100)  # Get 3x the requested amount, max 100
+    
     # Sort by trending score (view_count + save_count * 2)
     pipeline = [
         {"$match": filter_query},
@@ -384,10 +417,26 @@ async def get_trending_events(
             "trending_score": {"$add": [{"$ifNull": ["$view_count", 0]}, {"$multiply": [{"$ifNull": ["$save_count", 0]}, 2]}]}
         }},
         {"$sort": {"trending_score": -1}},
-        {"$limit": limit}
+        {"$limit": pool_size}
     ]
     
-    events = await db.events.aggregate(pipeline).to_list(length=limit)
+    events = await db.events.aggregate(pipeline).to_list(length=pool_size)
+    
+    # Use daily rotation like MyDscvr's Choice to ensure different events each day
+    # This provides deterministic variety while still selecting from high-quality trending events
+    if len(events) > limit:
+        # Get day of year for rotation
+        day_of_year = datetime.utcnow().timetuple().tm_yday
+        
+        # Rotate starting position based on day
+        # This ensures we show different events each day while maintaining quality
+        rotation_offset = (day_of_year * limit) % len(events)
+        
+        # Create a rotated list starting from the offset
+        rotated_events = events[rotation_offset:] + events[:rotation_offset]
+        
+        # Take the first 'limit' events from the rotated list
+        events = rotated_events[:limit]
     
     event_responses = []
     for event in events:
@@ -395,11 +444,11 @@ async def get_trending_events(
     
     return EventListResponse(
         events=event_responses,
-        total=len(events),
+        total=len(event_responses),
         page=1,
         per_page=limit,
         total_pages=1,
-        pagination={"page": 1, "per_page": limit, "total": len(events), "total_pages": 1, "has_next": False, "has_prev": False},
+        pagination={"page": 1, "per_page": limit, "total": len(event_responses), "total_pages": 1, "has_next": False, "has_prev": False},
         filters=await _get_filter_options(db)
     )
 
@@ -462,11 +511,26 @@ async def get_featured_events(
             }
         }},
         {"$addFields": {
+            "ai_image_score": {
+                "$cond": {
+                    "if": {
+                        "$or": [
+                            {"$gt": [{"$ifNull": ["$images.ai_generated", None]}, None]},
+                            {"$gt": [{"$ifNull": ["$ai_image_url", None]}, None]}
+                        ]
+                    },
+                    "then": 50,
+                    "else": 0
+                }
+            }
+        }},
+        {"$addFields": {
             "featured_score": {
                 "$add": [
-                    {"$multiply": [{"$ifNull": ["$family_score", 75]}, 0.5]},
-                    {"$multiply": ["$date_proximity_score", 0.25]},
-                    {"$multiply": ["$extraction_quality_score", 0.25]}
+                    {"$multiply": ["$ai_image_score", 0.5]},
+                    {"$multiply": ["$extraction_quality_score", 0.25]},
+                    {"$multiply": [{"$ifNull": ["$family_score", 75]}, 0.15]},
+                    {"$multiply": ["$date_proximity_score", 0.10]}
                 ]
             }
         }},
