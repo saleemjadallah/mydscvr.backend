@@ -1,0 +1,94 @@
+MISSING AI IMAGES REPORT
+========================================
+
+Generated: 2025-07-15 16:39:11.316125
+Total missing: 22
+
+Event ID: 685bd9564009b338adca07f7
+Title: No title
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bd9924009b338adca07fb
+Title: Jet-Lag at Cavo in Dubai
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdade4009b338adca0811
+Title: ToDA - 9D Breathwork Meditation
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdafc4009b338adca0813
+Title: BCL Asia 2025 - Finals Main Match
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdb574009b338adca0819
+Title: Abida Parveen Live at Coca-Cola Arena
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdb754009b338adca081b
+Title: Crowd Gigs by Mohamed Helmy at Zabeel Theatre, Dubai
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdb934009b338adca081d
+Title: Elissa in Dubai
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdc2b4009b338adca0827
+Title: Fly High Fitness Presents DanceFlix in Dubai
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdc674009b338adca082b
+Title: Unicorn Cafe Play Area Experience
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdc854009b338adca082d
+Title: Arabian Ranches Golf Club – Family Dining with Outdoor Play Area
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdca34009b338adca082f
+Title: Kailash Parbat Al Seef with Outdoor Kids Play Area
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdcc24009b338adca0831
+Title: Irish Village Family Dining & Play Area
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdce04009b338adca0833
+Title: Leo & Leona Soft Play Centre at Dubai Festival City Mall
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdd774009b338adca083d
+Title: Summer Splash Fest at LEGOLAND® Dubai Water Park
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bdd964009b338adca083f
+Title: DEAL 2025 - Amusement and Leisure Exhibition
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bddb44009b338adca0841
+Title: Women's Empowerment Convention (WE Convention)
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bddd24009b338adca0843
+Title: Secret Sky Brunch – ZETA Seventy Seven, Address Beach Resort
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bddf04009b338adca0845
+Title: Secret Ladies Day at FIVE Palm Jumeirah
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bde0e4009b338adca0847
+Title: Mammia Mia Ladies Day at Gallery 7/40, Palm Jumeirah
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bde2d4009b338adca0849
+Title: Infinity Pool Experiences – AURA SKYPOOL
+Broken URL: N/A
+----------------------------------------
+Event ID: 685bde4b4009b338adca084b
+Title: Car Show + Pool Party: Take It to the Streets – Dubai Experience 2025
+Broken URL: N/A
+----------------------------------------
+Event ID: 685c0aa84009b338adca0aed
+Title: İbrahim Tatlıses in Dubai
+Broken URL: N/A
+----------------------------------------
