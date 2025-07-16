@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
@@ -100,6 +101,10 @@ app.add_middleware(
         "http://localhost:5173"
     ]
 )
+
+# Add GZip compression middleware to reduce response sizes
+# This helps with HTTP2 protocol errors for large responses
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Add trusted host middleware for security
 if not settings.debug:
