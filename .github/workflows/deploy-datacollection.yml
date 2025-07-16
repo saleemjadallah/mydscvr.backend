@@ -1,12 +1,9 @@
 name: Deploy DataCollection to EC2
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'DataCollection/**'
-      - '.github/workflows/deploy-datacollection.yml'
   workflow_dispatch:
+  # Removed automatic push trigger to prevent duplicate deployments
+  # Deployment now only happens manually or from the dedicated datacollection repo
 
 jobs:
   deploy:
@@ -116,8 +113,8 @@ jobs:
           MAX_RETRY_ATTEMPTS=3
           RETRY_DELAY_SECONDS=5
           
-          # AI Image Generation Configuration (HYBRID MODE)
-          ENABLE_AI_IMAGE_GENERATION=true
+          # AI Image Generation Configuration (HYBRID MODE) - DISABLED FOR COST OPTIMIZATION
+          ENABLE_AI_IMAGE_GENERATION=false
           AI_IMAGE_BATCH_SIZE=5
           AI_IMAGE_BATCH_DELAY=10
           
