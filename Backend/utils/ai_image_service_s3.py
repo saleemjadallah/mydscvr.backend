@@ -240,15 +240,18 @@ def create_ai_image_service_s3():
     """Create AI image service with S3 storage"""
     
     # Get configuration
-    openai_key = getattr(settings, 'openai_api_key', None)
+    openai_key = getattr(settings, 'openai_api_key', None) or os.getenv('OPENAI_API_KEY')
     if not openai_key:
         raise ValueError("OPENAI_API_KEY not configured")
     
-    # Create S3 service
-    s3_bucket = getattr(settings, 's3_image_bucket', 'mydscvr-event-images')
-    s3_region = getattr(settings, 's3_region', 'us-east-1')
-    aws_access_key = getattr(settings, 'aws_access_key_id', None)
-    aws_secret_key = getattr(settings, 'aws_secret_access_key', None)
+    # Create S3 service with environment variables
+    s3_bucket = getattr(settings, 's3_bucket_name', None) or os.getenv('S3_BUCKET_NAME', 'mydscvr-event-images')
+    s3_region = getattr(settings, 'aws_region', None) or os.getenv('AWS_REGION', 'me-central-1')
+    aws_access_key = getattr(settings, 'aws_access_key_id', None) or os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_key = getattr(settings, 'aws_secret_access_key', None) or os.getenv('AWS_SECRET_ACCESS_KEY')
+    
+    if not aws_access_key or not aws_secret_key:
+        raise ValueError("AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
     
     s3_service = S3ImageService(
         bucket_name=s3_bucket,
