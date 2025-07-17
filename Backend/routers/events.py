@@ -785,7 +785,7 @@ async def _convert_event_to_response(event: dict, is_saved: bool = False) -> Eve
         price_min = pricing_data.get("base_price", 0) or 0
         price_max = pricing_data.get("max_price") or pricing_data.get("maxPrice")
         if price_min and price_min > 0:
-            print(f"DEBUG: Found pricing data - base_price: {price_min}, max_price: {price_max}")
+            pass
     
     # Fallback to price_data structure
     elif isinstance(price_data, dict):
@@ -831,12 +831,10 @@ async def _convert_event_to_response(event: dict, is_saved: bool = False) -> Eve
     
     # Extract category from available fields  
     category = event.get("category", "General")
-    print(f"DEBUG: Event '{event.get('title', 'Unknown')[:30]}' has category: '{category}'")
     
     # Ensure we have a valid category
     if not category or category in ["", "null", None]:
         category = "General"
-        print("DEBUG: Category was invalid, setting to General")
     
     # Generate a basic family score based on tags and price
     family_score = 50  # Default score

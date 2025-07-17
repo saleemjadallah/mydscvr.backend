@@ -7,6 +7,7 @@ Handles OTP verification emails with Dubai-themed HTML templates
 import requests
 import json
 import logging
+import os
 from typing import Dict, Optional, Any
 from datetime import datetime
 from config import settings
@@ -19,7 +20,9 @@ class ZeptoMailService:
     
     def __init__(self):
         self.api_url = "https://api.zeptomail.com/v1.1/email"
-        self.api_key = "wSsVR61y+BWmWqkrmT2qLus4mVsDAl71FE9+3lKm6CT0HP3Ap8c8kRGdA1LzFfFJQjM7QWBDp7osmxsG0zpb2457yF4CXiiF9mqRe1U4J3x17qnvhDzPXWpelxuMK4gJwA5pmGJkG8sk+g=="
+        self.api_key = os.getenv("ZEPTOMAIL_API_KEY")
+        if not self.api_key:
+            raise ValueError("ZEPTOMAIL_API_KEY environment variable is required")
         self.sender_email = "noreply@mydscvr.ai"
         self.sender_name = "MyDSCVR Dubai Events"
         

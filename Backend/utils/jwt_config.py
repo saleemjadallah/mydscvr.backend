@@ -55,8 +55,6 @@ class JWTConfig:
         
         to_encode.update({"exp": expire})
         
-        # Log what's being stored in the token
-        logger.info(f"🔑 Creating JWT token with payload: sub={to_encode.get('sub')}, type={to_encode.get('type')}")
         
         try:
             encoded_jwt = jwt.encode(to_encode, cls.SECRET_KEY, algorithm=cls.ALGORITHM)

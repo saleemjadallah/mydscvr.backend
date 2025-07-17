@@ -548,11 +548,9 @@ async def test_token(
     """
     try:
         token = credentials.credentials
-        logger.info(f"🔍 Testing token: {token[:20]}...")
         
         # Verify token
         user_id = auth_service._verify_access_token(token)
-        logger.info(f"🔍 Extracted user_id from token: {user_id}")
         
         if not user_id:
             return {"success": False, "error": "Invalid token"}
