@@ -1,3 +1,5 @@
 *.pem
 *.key
 *.p12
+Backend.env
+*.env
