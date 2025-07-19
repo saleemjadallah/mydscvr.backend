@@ -111,7 +111,7 @@ async def search_events(
     longitude: Optional[float] = Query(None, description="Longitude"),
     radius_km: Optional[float] = Query(10, description="Search radius"),
     page: int = Query(1, ge=1),
-    per_page: int = Query(20, ge=1, le=100),
+    per_page: int = Query(50, ge=1, le=100),
     sort_by: str = Query("relevance", description="Sort by: relevance, start_date, price, family_score"),
     db: AsyncIOMotorDatabase = Depends(get_mongodb),
     # rate_limit: bool = Depends(search_rate_limit)  # Temporarily disabled
@@ -466,7 +466,7 @@ async def smart_search(
     q: Optional[str] = Query(None, description="Search query for flexible smart search"),
     area: Optional[str] = Query(None, description="Dubai area"),
     page: int = Query(1, ge=1),
-    per_page: int = Query(20, ge=1, le=100),
+    per_page: int = Query(50, ge=1, le=100),
     db: AsyncIOMotorDatabase = Depends(get_mongodb),
     # rate_limit: bool = Depends(search_rate_limit)  # Temporarily disabled
 ):
